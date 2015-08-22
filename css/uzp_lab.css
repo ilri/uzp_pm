@@ -1,0 +1,96 @@
+root { display: block; }
+
+html{ overflow: -moz-scrollbars-vertical; }
+
+body {
+    font-family:Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    font-size: 76%;
+    color: #000000;
+    background-color:#f1f1f1;
+}
+
+-moz-any-link:focus { border: none; }
+
+#uzp_header{
+   padding:0px;
+   text-align: center;
+   margin: 5px;
+   height: 142px;
+   vertical-align: middle;
+   border-bottom:1px gray solid;
+   background-image: url("../images/uzp_header.jpg");
+}
+
+#home, #whoisme, #lower_panel{ width: 920px; }
+
+#uzp{
+   width: 920px;
+   margin: 3px auto;
+   border: 1px solid gray;
+}
+
+#uzp_footer{
+   height: 20px;
+   border: 1px solid gray;
+   width: 892px;
+   font-size:.8em;
+   color: #F2EAC7;
+   font-weight: bold;
+   text-align: right;
+   padding: 4px 15px 0px 2px;
+   vertical-align:middle;
+   background-color: #764B35;
+   margin: 5px;
+}
+
+#credits{
+   width: 500px;
+   margin: 2px auto;
+   text-align: center;
+   font-size: 0.9em;
+}
+
+input[type=text]{ height: 30px; }
+#home_title{ font-weight: bold; }
+.center{ text-align: center; clear: both; }
+.left{ text-align: left; clear: both; margin-left: 5px; float: left; }
+#receive_samples .scan, #broth_enrichment .scan, #mcconky_plate .scan, #colonies .scan, #colonies_storage .scan, #ast_result .scan, #biochem_test .scan{ margin: 5px; width: 700px; float: left; }
+#colonies_storage .scan{ margin: 5px; width: 900px;}
+#receive_samples .received, #broth_enrichment .received, #mcconky_plate .received, #colonies .received, #ast_result .received, #biochem_test .received{ margin: 5px 5px 5px 710px; width: 205px; min-height: 300px; border: 1px dotted black; }
+#ast_result, #biochem_test{height: 650px;}
+#colonies_storage #plate_layout{width: 550px; height: 550px; margin-left: 350px; margin-top: 80px; }
+#sample_format, #broth_format, #mcconky_format, #colonies_format, #plate_format, #media_format, #colony_format, #drug_name, #drug_value, #no_eppendorfs, #colony_pos{ float: left; }
+#scanned_colonies{ height: 100px; width: 200px; border: 1px dotted black; margin: 2px auto; }
+#current_user{ margin-left: 5px; padding-left: 5px; }
+#plate_layout .pos{float: left; border: 0.5px dotted black; margin: 1px; width: 50px; height: 50px; }
+#plate_layout .empty{ background-color: #D8432E; }
+#plate_layout .occupied{ background-color: #009D59; }
+.test_oblabels{display: inline-block; width: 75px; text-align: left; margin-left: 5px;}
+#eppendorf_label{  
+  font-size: 18px;
+  background-color: rgb(73, 209, 120);
+  width: 350px;
+  height: 45;
+  margin: 15px;
+  vertical-align: middle;
+  display: inline-block;
+  text-align: center;
+  padding-top: 20px;
+}
+
+.circular_div {
+   border-radius: 50%;
+}
+
+.step_toggle_btns {
+   height: 50px;
+   width: 50px;
+}
+
+#next_step, #prev_step, #content_container{ display: inline-block;}
+#content_container {width: 80%;}
+#pm_tmplt_container {margin-left: 40px;}
+.input_label {float: left;min-width: 150px;}
+.input_container {margin-left: 30%}

@@ -1,0 +1,38 @@
+{
+  "name": "uzp-99h-lab",
+  "version": "1.0",
+  "directory":"common/bower",
+  "authors": [
+    "Absolomon Kihara <a.kihara@cgiar.org>",
+    "Jason Rogena <j.rogena@cgiar.org>"
+  ],
+  "description": "The 99H is a cross-cutting study which integrates multiple project threads. The project will contribute to the understanding of factors influencing public health risk from emerging zoonotic pathogens in an urbanised environment and the role of livestock keeping and contact with value chains in driving disease emergence.",
+  "main": "index.php",
+  "keywords": [
+    "urban zoo",
+    "ILRI",
+    "laboratory"
+  ],
+  "license": "GPLv3",
+  "homepage": "http://zoonotic-diseases.org",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "1.8.3",
+    "jquery-ui": "~1.11.4",
+    "jquery-form": "~3.46.0",
+    "jquery-json": "~2.5.1",
+    "jqwidgets": "*",
+    "jsencrypt": "~2.1.0",
+    "bootstrap": "2.3.1",
+    "jquery-flexigrid": "~1.1.5",
+    "jquery-md5": "*",
+    "azizi-shared-libs": "https://github.com/ilri/azizi-shared-libs.git",
+    "datePicker": "https://github.com/freqdec/datePicker.git"
+  }
+}

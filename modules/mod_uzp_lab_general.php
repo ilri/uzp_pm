@@ -172,6 +172,7 @@ class Uzp extends DBase{
 <script type="text/javascript" src="<?php echo OPTIONS_COMMON_FOLDER_PATH; ?>jqwidgets/jqwidgets/jqxinput.js"></script>
 <script type="text/javascript" src="<?php echo OPTIONS_COMMON_FOLDER_PATH; ?>jqwidgets/jqwidgets/jqxbuttons.js"></script>
 <script type="text/javascript" src="<?php echo OPTIONS_COMMON_FOLDER_PATH; ?>jqwidgets/jqwidgets/jqxnotification.js"></script>
+<a href="./?page=" style="float: right; margin-bottom: 10px; margin-right: 20px;">Home</a> <br />
 <div id="notification_box"><div id="msg"></div></div>
 <?php
       $defaultCss = "background-color: #79B5D2; border: 3px solid #4095BF;";

@@ -21,6 +21,7 @@ function Uzp(currUri, currHtml, lastInputId) {
    this.prevUri = null;
    this.nextUri = null;
    this.animalId = null;
+   this.rules = {};
    
    $("#content_container").html(currHtml);
    this.inputTypes = "input,select,textarea";
@@ -88,6 +89,21 @@ Uzp.prototype.setNextStep = function(nextStepUri) {
    window.uzp_lab.nextUri = nextStepUri;
 };
 
+Uzp.prototype.setDependsOn = function(inputId, dependsOnId, possibleValues) {
+   dependsOnId = dependsOnId + window.uzp_lab.inputSuffix;
+   inputId = inputId + window.uzp_lab.inputSuffix;
+   console.log(dependsOnId);
+   $("#"+dependsOnId).change(function(){
+      console.log("depends on changed");
+      if(possibleValues.indexOf($("#"+dependsOnId).val()) >= 0) {//value has changed to one we want
+         $("#"+inputId).removeAttr("disabled");
+      }
+      else {
+         $("#"+inputId).attr("disabled", "disabled");
+      }
+   });
+};
+
 /**
  * Show a notification on the page
  *
@@ -124,6 +140,17 @@ Uzp.prototype.createSampleRegex = function(sampleBarcode){
    return newRegex;
 };
 
+Uzp.prototype.addRule = function(inputId, ruleType, data) {
+   if(ruleType == 'regex') {//make sure the value of the input meets the specifed regex
+      console.log("Adding regex rule for "+inputId);
+      var regex = window.uzp_lab.createSampleRegex(data);
+      if(typeof window.uzp_lab.rules[inputId] == 'undefined'){
+         window.uzp_lab.rules[inputId] = {};
+      }
+      window.uzp_lab.rules[inputId]['regex'] = regex;
+   }
+};
+
 /**
  * This function checks for all the input types and returns an array with their values.
  * The function also removes any input name prefix/suffix
@@ -144,24 +171,50 @@ Uzp.prototype.getInputValues = function (){
    return values;
 };
 
+Uzp.prototype.validateValues = function(data) {
+   var inputIds = Object.keys(data);
+   var response = {error:false, message:''};
+   for(var index = 0; index < inputIds.length; index++) {
+      var currInputId = inputIds[index];
+      if(typeof window.uzp_lab.rules[currInputId] != 'undefined') {
+         var currRules = window.uzp_lab.rules[currInputId];
+         if(typeof currRules['regex'] != 'undefined') {
+            //check if the data meets the regex
+            if(currRules['regex'].test(data[currInputId]) === false) {
+               response = {error:true, message:currInputId+' does not follow the required format'};
+               $("#"+currInputId+window.uzp_lab.inputSuffix).focus();
+               return response;
+            }
+         }
+      }
+   }
+   return response;
+};
+
 /**
  * 
  * @returns {undefined}
  */
 Uzp.prototype.commit = function(direction) {
    var inputValues = window.uzp_lab.getInputValues();
-   $.ajax({
-      type:"POST", url: "mod_ajax.php?page=pm&do=commit&curr_step="+window.uzp_lab.currUri+"&animal="+window.uzp_lab.animalId, async: false, dataType:'json', data: inputValues,
-      success: function (data) {
-         console.log(data);
-         if(data.error === true){
-            window.uzp_lab.showNotification(data.message, 'error');
-            return;
-         }
-         else{
-            if(direction == "previous") window.uzp_lab.goToPreviousPage(data.animal);
-            else window.uzp_lab.goToNextPage(data.animal);
-         }
-     }
-  });
+   var validation = window.uzp_lab.validateValues(inputValues);
+   if(validation.error == false) {
+      $.ajax({
+         type:"POST", url: "mod_ajax.php?page=pm&do=commit&curr_step="+window.uzp_lab.currUri+"&animal="+window.uzp_lab.animalId, async: false, dataType:'json', data: inputValues,
+         success: function (data) {
+            console.log(data);
+            if(data.error === true){
+               window.uzp_lab.showNotification(data.message, 'error');
+               return;
+            }
+            else{
+               if(direction == "previous") window.uzp_lab.goToPreviousPage(data.animal);
+               else window.uzp_lab.goToNextPage(data.animal);
+            }
+        }
+     });
+   }
+   else {
+      window.uzp_lab.showNotification(validation.message, 'error');
+   }
 };

@@ -166,9 +166,9 @@ Uzp.prototype.getInputValues = function (){
       if(currInput.attr('id').indexOf(window.uzp_lab.inputSuffix) > 0) {//the input id contains the input suffix
          var id = currInput.attr('id').substr(0, (currInput.attr('id').indexOf(window.uzp_lab.inputSuffix)));
          values[id] = currInput.val();
+         if(values[id] == '') values[id] = null;
       }
    }
-   console.log(values);
    return values;
 };
 
@@ -181,7 +181,7 @@ Uzp.prototype.validateValues = function(data) {
          var currRules = window.uzp_lab.rules[currInputId];
          if(typeof currRules['regex'] != 'undefined') {
             //check if the data meets the regex
-            if(currRules['regex'].test(data[currInputId]) === false) {
+            if(typeof data[currInputId] != 'undefined' && data[currInputId] != null && data[currInputId].length > 0 && currRules['regex'].test(data[currInputId]) === false) {
                response = {error:true, message:currInputId+' does not follow the required format'};
                $("#"+currInputId+window.uzp_lab.inputSuffix).focus();
                return response;
@@ -206,6 +206,11 @@ Uzp.prototype.commit = function(direction) {
             console.log(data);
             if(data.error === true){
                window.uzp_lab.showNotification(data.message, 'error');
+               if(typeof data.focus != 'undefined') {
+                  var inputId = data.focus + window.uzp_lab.inputSuffix;
+                  console.log("Focusing on "+inputId);
+                  $("#"+inputId).focus();
+               }
                return;
             }
             else{

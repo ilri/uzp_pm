@@ -283,7 +283,7 @@ class Uzp extends DBase{
               . $this->generateSelectPair("Age Class", "age", array(" neonate" => "Neonate", "juvenile" => "Juvenile", "subadult" => "Subadult", "adult" => "Adult", "unknown" => "Unknown"), $data)
               . $this->generateSelectPair("Sex", "sex", array("male" => "Male", "female" => "Female", "unknown" => "Unknown"), $data)
               . $this->generateSelectPair("Pregnant?", "pregnant", array("yes" => "Yes", "no" => "No"), $data, "sex", array("female"))
-              . $this->generateSelectPair("Lactating?", "lactating", array("yes" => "Yes", "no" => "No"), $data)
+              . $this->generateSelectPair("Lactating?", "lactating", array("yes" => "Yes", "no" => "No"), $data, "sex", array("female"))
               . $this->generateSelectPair("Condition at sampling", "cond_samp", array("a_healthy" => "Apparently healthy", "sign_sick" => "Signs of sickness", "injured" => "Injured", "unknown" => "Unknown"), $data)
               . $this->generateTextAreaPair("Describe clinical signs if present", "clcl_sgns", $data)
               . $this->generateSelectPair("Is disease suspected?", 'is_dis_suspected', array("yes" => "Yes", "no" => "No"), $data)
@@ -502,7 +502,7 @@ class Uzp extends DBase{
    private function initPmStep19() {
       $animalId = $_GET['animal'];
       $data = $this->getAnimalData($_GET['animal']);
-      $html = "<h3 class='center'>Commit</h3>"
+      $html = "<h3 class='center'>Carcas</h3>"
               . "<div class='input_container'>"
               . $this->generateInputPair("Carcas barcode", "carcas_bc", $data, "barcode")
               . $this->generateTextAreaPair("General Comment", "general_comment", $data)
@@ -621,6 +621,7 @@ class Uzp extends DBase{
       $response = array();
       $currStep = $_GET['curr_step'];
       $animalId = $_GET['animal'];
+      $direction = $_GET['direction'];
       $now = new DateTime('now');
       $postFields = array_keys($_POST);
       $postData = array();
@@ -643,17 +644,23 @@ class Uzp extends DBase{
             if($index < (count($postFields) - 1))  $query .= ":".$postFields[$index].", ";
             else $query .= ":".$postFields[$index].")";
          }
-         $this->Dbase->ExecuteQuery($query, $postData);
-         $query = "select id from postmortem where start_time = :time and end_time = :time";
-         $result = $this->Dbase->ExecuteQuery($query, array("time" => $nowTime));
-         if(is_array($result) && count($result) == 1) {
-            $response['error'] = false;
-            $response['message'] = 'Animal added to database';
-            $response['animal'] = $result[0]['id'];
+         $result = $this->Dbase->ExecuteQuery($query, $postData);
+         if($result !== 1) {
+            $query = "select id from postmortem where start_time = :time and end_time = :time";
+            $result = $this->Dbase->ExecuteQuery($query, array("time" => $nowTime));
+            if(is_array($result) && count($result) == 1) {
+               $response['error'] = false;
+               $response['message'] = 'Animal added to database';
+               $response['animal'] = $result[0]['id'];
+            }
+            else {
+               $response['error'] = true;
+               $response['message'] = "Unable to add the animal to the database";
+            }
          }
          else {
             $response['error'] = true;
-            $response['message'] = "Unable to add the animal to the database";
+            $response['message'] = $this->Dbase->lastError;
          }
       }
       else if(strlen($animalId) > 0) {//the animal id should be set for all other steps
@@ -664,16 +671,55 @@ class Uzp extends DBase{
          }
          $query .= "id = :animal";
          $postData['animal'] = $animalId;
-         $this->Dbase->ExecuteQuery($query, $postData);
-         $response['error'] = false;
-         $response['message'] = "Previous step committed";
-         $response['animal'] = $animalId;
+         $result = $this->Dbase->ExecuteQuery($query, $postData);
+         if($result !== 1) {
+            $response['error'] = false;
+            $response['message'] = "Previous step committed";
+            $response['animal'] = $animalId;
+            //check if we are in the last step
+            if($currStep == "step19" && $direction == "next") {
+               $mandatory = array("vet", "assistant", "animal_id", "animal_class", "weight", "species", "id_certainty", "age", "sex", "pregnant", "lactating", "cond_samp", "is_dis_suspected", "bcs", "body_length", "ear_length", "hfoot_length", "tail_length", "full_body_length", "anterior_facial", "lateral_facial");
+               $query = "select * from postmortem where id = :animal";
+               $result = $this->Dbase->ExecuteQuery($query, array("animal" => $animalId));
+               if(is_array($result) && count($result) == 1) {
+                  $result = $result[0];
+                  $ok = true;
+                  foreach($mandatory as $currField) {
+                     if($this->hasValue($result[$currField]) == false) {
+                        $response['error'] = true;
+                        $response['message'] = "$currField does not have a value";
+                        $ok = false;
+                        break;
+                     }
+                  }
+                  if($ok == true) {
+                     $query = "update postmortem set _complete = 1 where id = :animal";
+                     $this->Dbase->ExecuteQuery($query, array("animal" => $animalId));
+                  }
+               }
+               else {
+                  $response['error'] = true;
+                  $response['message'] = "Cannot find animal with the provided data";
+               }
+            }
+         }
+         else {
+            $response['error'] = true;
+            $response['message'] = $this->Dbase->lastError;
+         }
       }
       else {
          $response['error'] = true;
          $response['message'] = "The animal ID is not set. Start postmoterm from the beginning";
       }
       die(json_encode($response));
+   }
+   
+   private function hasValue($variable) {
+      if(strlen($variable) > 0 && strtolower($variable) != "null") {
+         return true;
+      }
+      return false;
    }
    
    private function getAnimalData($id) {

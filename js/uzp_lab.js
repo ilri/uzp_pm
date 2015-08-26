@@ -65,6 +65,7 @@ function Uzp(currUri, currHtml, lastInputId) {
 
 Uzp.prototype.goToNextPage = function(animalId) {
    if(window.uzp_lab.nextUri != null) window.location.href = "?page=pm&do="+window.uzp_lab.nextUri+"&animal="+animalId;
+   else window.location.href = "?page=pm";
 };
 
 Uzp.prototype.goToPreviousPage = function(animalId) {
@@ -200,7 +201,7 @@ Uzp.prototype.commit = function(direction) {
    var validation = window.uzp_lab.validateValues(inputValues);
    if(validation.error == false) {
       $.ajax({
-         type:"POST", url: "mod_ajax.php?page=pm&do=commit&curr_step="+window.uzp_lab.currUri+"&animal="+window.uzp_lab.animalId, async: false, dataType:'json', data: inputValues,
+         type:"POST", url: "mod_ajax.php?page=pm&do=commit&curr_step="+window.uzp_lab.currUri+"&animal="+window.uzp_lab.animalId+"&direction="+direction, async: false, dataType:'json', data: inputValues,
          success: function (data) {
             console.log(data);
             if(data.error === true){

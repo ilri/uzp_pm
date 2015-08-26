@@ -42,8 +42,25 @@ function Uzp(currUri, currHtml, lastInputId) {
                   while ((allInputs[i]).name == (allInputs[i + 1]).name) {
                      i++;
                   }
-                  if ((i + 1) < allInputs.length)
-                     $(allInputs[i + 1]).focus();
+                  if ((i + 1) < allInputs.length){
+                     console.log("here");
+                     //check for the next focusable input
+                     var nextInput = i + 1;
+                     while(nextInput < allInputs.length) {
+                        if($(allInputs[nextInput]).is(":disabled")){
+                           if(nextInput == (allInputs.length - 1)) {//last input
+                              window.uzp_lab.commit('next');
+                           }
+                           else {
+                              nextInput++;
+                           }
+                        }
+                        else {
+                           $($(allInputs[nextInput])).focus();
+                           break;
+                        }
+                     }
+                  }
                }
             }
          }

@@ -215,7 +215,7 @@ Uzp.prototype.getInputValues = function (){
       var currInput = $(allInputs[index]);
       if(typeof currInput.attr('id') != 'undefined' && currInput.attr('id').indexOf(window.uzp_lab.inputSuffix) > 0) {//the input id contains the input suffix
          var id = currInput.attr('id').substr(0, (currInput.attr('id').indexOf(window.uzp_lab.inputSuffix)));
-         values[id] = currInput.val();
+         values[id] = currInput.val().replace(/(?:\r\n|\r|\n)/g, '');
          if(values[id] == '') values[id] = null;
       }
    }

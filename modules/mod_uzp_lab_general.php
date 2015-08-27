@@ -212,7 +212,8 @@ class Uzp extends DBase{
       $this->setPmTemplate($prevUri, $nextUri);
 ?>
 <script type="text/javascript">
-   var uzp = new Uzp("<?php echo $uri;?>", "<?php echo $html;?>", "<?php echo $lastInputId;?>");
+   $("#content_container").html("<?php echo $html;?>");
+   var uzp = new Uzp("<?php echo $uri;?>", "<?php echo $lastInputId;?>");
 </script>
 <?php
       if($prevUri != null) {
@@ -254,9 +255,9 @@ class Uzp extends DBase{
       $data = $this->getAnimalData($_GET['animal']);
       $html = "<h3 class='center'>Samples</h3>"
             . "<div class='input_container'>"
-            . $this->generateInputPair("Weight (grams)", "weight", $data, "number", null, null)
+            . $this->generateInputPair("Weight (grams)", "weight", $data, "number", null, null, null, array("min" =>0, "max" => 20000))
             . $this->generateInputPair("EDTA", "edta", $data, "barcode", null, null, "If enough blood")
-            . $this->generateInputPair("Serum", "serum", $data, "barcode", null, null, "Rodents: V small rodent: dilute 1:10 w/ PBS in eppendorf Bats: Bats &lt;100gm: dilute 1:10 w/ PBS in eppendorf; Bats &gt;100g: &lt;1mL in eppendorf, &gt;1mL into serum tube Birds: &lt;100gm: dilute 1:10 w/ PBS in eppendorf; Birds &gt;100g: &lt;1mL in eppendorf, &gt;1mL into serum tube")
+            . $this->generateInputPair("Serum", "serum", $data, "barcode")
             . $this->generateInputPair("1st Blood Smear", "bsmear_1", $data, "barcode", null, null, "Dry 30 mins, then methanol")
             . $this->generateInputPair("2nd Blood Smear", "bsmear_2", $data, "barcode", null, null, "Dry 30 mins, then methanol")
             . $this->generateInputPair("1st Oropharyngeal", "osmear_1", $data, "barcode", null, null, "200ul Lysis buffer")
@@ -271,16 +272,19 @@ class Uzp extends DBase{
       $data = $this->getAnimalData($_GET['animal']);
       $species = array("unknown" => "Unknown");
       $bcs = array("unknown" => "Unknown");
+      $ages = array(" neonate" => "Neonate", "juvenile" => "Juvenile", "subadult" => "Subadult", "adult" => "Adult", "unknown" => "Unknown");
       if(is_array($data) && isset($data['animal_class'])) {
          if($data['animal_class'] == 'rodent') {
             $species = array(
                "unknown" => "Unknown", "rattus" => "Common Rat (Rattus)", "mastomys" => "Multimammate Rat (Mastomys)", "mus" => "Common Mouse (Mus)", "graphiurus" => "African Dormouse (Graphiurus)", "savannah cane rat" => "Savannah Cane-rat", "dendromus" => "Climbing Mouse (Dendromus)", "steatomys" => "Fat Mouse (Steatomys)", "cricetomys" => "Giant Pouched Rat (Cricetomys)", "saccostomus" => "Pouched Mouse (Saccostomus)", "lophuromys" => "Brush-furred Mouse (Lophuromys)", "arvicanthis" => "Unstriped Grass Rat (Arvicanthis)", "pelomys" => "Creek Rat (Pelomys)", "lemniscomys" => "Zebra Mouse (Lemniscomys)"
             );
             $bcs = array("1" => "1", "2" => "2", "3" => "3", "4" => "4", "5" => "5");
+            $ages = array(" neonate" => "Neonate", "juvenile" => "Juvenile", "subadult" => "Subadult", "adult" => "Adult", "unknown" => "Unknown");
          }
          else if($data['animal_class'] == 'bat') {
             $species = array("unknown" => "Unknown", "eidolon helvum" => "Eidolon helvum", "lissonycerteris angolensis" => "Lissonycerteris angolensis", "micropteropus pusillus" => "Micropteropus pusillus", "rousettus aegyptiacus" => "Rousettus aegyptiacus", "epomorphus" => "Epomorphus", "epomorphus minimus" => "Epomorphus minimus", "epomorphus wahlbergi" => "Epomorphus wahlbergi", "rhinolophus" => "Rhinolophus", "rhinolophus clivosus" => "Rhinolophus clivosus", "rhinolophus eloquens" => "Rhinolophus eloquens", "rhinolophus fumigatus" => "Rhinolophus fumigatus", "rhinolophus hildebrandtii" => "Rhinolophus hildebrandtii", "rhinolophus landeri" => "Rhinolophus landeri", "rhinolophus simulator" => "Rhinolophus simulator", "hipposideridae" => "Hipposideridae", "triaenops persicus" => "Triaenops persicus", "hipposideros caffer" => "Hipposideros caffer", "hipposideros gigas" => "Hipposideros gigas", "hipposideros megalotis" => "Hipposideros megalotis", "hipposideros ruber" => "Hipposideros ruber", "hipposideros vittatus" => "Hipposideros vittatus", "megadermatidae" => "Megadermatidae", "cardioderma cor" => "Cardioderma cor", "lavia frons" => "Lavia frons", "rhinopomatidae" => "Rhinopomatidae", "rhinopoma macinnesi" => "Rhinopoma macinnesi", "emballonuridae" => "Emballonuridae", "taphozous perforatus" => "Taphozous perforatus", "nycteridae" => "Nycteridae", "nycteris aurita" => "Nycteris aurita", "nycteris grandis" => "Nycteris grandis", "nycteris hispida" => "Nycteris hispida", "nycteris macrotis" => "Nycteris macrotis", "nycteris thebaica" => "Nycteris thebaica", "molossidae" => "Molossidae", "platymops (genus)" => "Platymops (genus)", "platymops setiger" => "Platymops setiger", "chaerephon (genus)" => "Chaerephon (genus)", "chaerephon bemmeleni" => "Chaerephon bemmeleni", "chaerephon chapini" => "Chaerephon chapini", "mops (genus)" => "Mops (genus)", "mops condylurus" => "Mops condylurus", "tadarida (genus)" => "Tadarida (genus)", "tadarida aegyptiaca" => "Tadarida aegyptiaca", "tadarida lobata" => "Tadarida lobata", "miniopteridae" => "Miniopteridae", "miniopterus africanus" => "Miniopterus africanus", "miniopterus fraterculus" => "Miniopterus fraterculus", "miniopterus inflatus" => "Miniopterus inflatus", "miniopterus natalensis" => "Miniopterus natalensis", "vespertilionidae" => "Vespertilionidae", "mimetillus moloneyi" => "Mimetillus moloneyi", "nycticeinops schlieffeni" => "Nycticeinops schlieffeni", "glauconycteris (genus)" => "Glauconycteris (genus)", "glauconycteris argentata" => "Glauconycteris argentata", "glauconycteris variegata" => "Glauconycteris variegata", "hypsugo (genus)" => "Hypsugo (genus)", "hypsugo eisentrauti" => "Hypsugo eisentrauti", "pipistrellus (genus)" => "Pipistrellus (genus)", "pipistrellus aero" => "Pipistrellus aero", "pipistrellus grandidieri" => "Pipistrellus grandidieri", "pipistrellus hesperidus" => "Pipistrellus hesperidus", "kerivoula (genus)" => "Kerivoula (genus)", "kerivoula argentata" => "Kerivoula argentata", "kerivoula smithii" => "Kerivoula smithii", "myotis (genus)" => "Myotis (genus)", "myotis bocagii" => "Myotis bocagii", "myotis tricolor" => "Myotis tricolor", "myotis welwitschii" => "Myotis welwitschii", "neoromicia (genus)" => "Neoromicia (genus)", "neoromicia capensis" => "Neoromicia capensis", "neoromicia helios" => "Neoromicia helios", "neoromicia nana " => "Neoromicia nana ", "neoromicia somalica" => "Neoromicia somalica", "scotoecus (genus)" => "Scotoecus (genus)", "scotoecus albigula" => "Scotoecus albigula", "scotoecus hindei" => "Scotoecus hindei", "scotoecus hirundo" => "Scotoecus hirundo", "scotophilus" => "Scotophilus", "scotophilus nigrita" => "Scotophilus nigrita");
             $bcs = array("poor" => "Poor", "fair" => "Fair", "good" => "Good");
+            $ages = array(" neonate" => "Neonate", "juvenile" => "Juvenile", "adult" => "Adult", "unknown" => "Unknown");
          }
       }
       $html = "<h3 class='center'>Phenotyping</h3>"
@@ -288,7 +292,7 @@ class Uzp extends DBase{
               . $this->generateSelectPair("Species", "species", $species, $data)
               . $this->generateTextAreaPair("Taxonomy to lowest level", "taxonomy", $data, "species", array('unknown'))
               . $this->generateSelectPair("ID Certainty", "id_certainty", array("actual" => "Actual", "estimate" => "Estimate", "unknown" => "Unknown"), $data)
-              . $this->generateSelectPair("Age Class", "age", array(" neonate" => "Neonate", "juvenile" => "Juvenile", "subadult" => "Subadult", "adult" => "Adult", "unknown" => "Unknown"), $data)
+              . $this->generateSelectPair("Age Class", "age", $ages, $data)
               . $this->generateSelectPair("Sex", "sex", array("male" => "Male", "female" => "Female", "unknown" => "Unknown"), $data)
               . $this->generateSelectPair("Pregnant?", "pregnant", array("yes" => "Yes", "no" => "No"), $data, "sex", array("female"))
               . $this->generateSelectPair("Lactating?", "lactating", array("yes" => "Yes", "no" => "No"), $data, "sex", array("female"))
@@ -326,14 +330,14 @@ class Uzp extends DBase{
       }
       $html = "<h3 class='center'>Body Measurements</h3>"
               . "<div class='input_container'>"
-              . $this->generateInputPair("Body length (mm)", "body_length", $data, "number", null, null, $bodyLengthComment)
-              . $this->generateInputPair("Ear length (mm)", "ear_length",  $data, "number", null, null, $earLengthComment)
-              . $this->generateInputPair("Tragus length (mm)", "tragus_length", $data, "number", null, null, $tragusComment)//only if bat
-              . $this->generateInputPair("Forearm length (mm)", "forearm_length", $data, "number", null, null, $forearmComment)//only if bat
-              . $this->generateInputPair("Tibia length (mm)", "tibia_length", $data, "number", null, null, $tibiaComment)//only if bat
-              . $this->generateInputPair("Hind foot length (mm)", "hfoot_length", $data, "number", null, null, $hindFootComment)
-              . $this->generateInputPair("Tail length (mm)", "tail_length", $data, "number", null, null, $tailComment)
-              . $this->generateInputPair("Full body (mm)", "full_body_length", $data, "number", null, null, $fullBodyComment)
+              . $this->generateInputPair("Body length (mm)", "body_length", $data, "number", null, null, $bodyLengthComment, array("min" => 10, "max" => 1000))
+              . $this->generateInputPair("Ear length (mm)", "ear_length",  $data, "number", null, null, $earLengthComment, array("min" => 5, "max" => 200))
+              . $this->generateInputPair("Tragus length (mm)", "tragus_length", $data, "number", "animal_class", array("bat"), $tragusComment, array("min" =>1, "max" => 200))//only if bat
+              . $this->generateInputPair("Forearm length (mm)", "forearm_length", $data, "number", "animal_class", array("bat"), $forearmComment, array("min" => 10, "max" => 300))//only if bat
+              . $this->generateInputPair("Tibia length (mm)", "tibia_length", $data, "number", "animal_class", array("bat"), $tibiaComment, array("min" => 10, "max" => 200))//only if bat
+              . $this->generateInputPair("Hind foot length (mm)", "hfoot_length", $data, "number", null, null, $hindFootComment, array("min" => 1, "max" => 300))
+              . $this->generateInputPair("Tail length (mm)", "tail_length", $data, "number", null, null, $tailComment, array("min" => 10, "max" => 1000))
+              . $this->generateInputPair("Full body", "full_body_length", $data, "number", null, null, $fullBodyComment)
               . $this->generateInputPair("Full anterior facial", "anterior_facial", $data, "number")
               . $this->generateInputPair("Full lateral facial/head", "lateral_facial", $data, "number")
               . $this->generateInputPair("Parted pelage on dorsum", "pp_dorsum", $data, "number", "animal_class", array("bat"))//only if bat
@@ -345,7 +349,7 @@ class Uzp extends DBase{
    private function initPmStep5() {
       $animalId = $_GET['animal'];
       $data = $this->getAnimalData($_GET['animal']);
-      $html = "<h3 class='center'>Step 5</h3>"
+      $html = "<h3 class='center'>Necropsy</h3>"
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Integument lesions", "integument_les", $data)
               . $this->generateInputPair("Scan integument", "integument_bc", $data, "barcode", null, null, "10% formalin")
@@ -388,7 +392,7 @@ class Uzp extends DBase{
       $html = "<h3 class='center'>Liver</h3>"
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Liver lesions", "liver_les", $data)
-              . $this->generateInputPair("Liver weight (mg)", "liver_weight", $data, "number")
+              . $this->generateInputPair("Liver weight (mg)", "liver_weight", $data, "number", null, null, null, array("min" => 1, "max" => 10000))
               . $this->generateInputPair("Scan liver 1", "liver_1_bc", $data, "barcode", null, null, "Frozen")
               . $this->generateInputPair("Scan liver 2", "liver_2_bc", $data, "barcode", null, null, "VTM")
               . $this->generateInputPair("Scan liver 3", "liver_3_bc", $data, "barcode", null, null, "10% formalin")
@@ -402,7 +406,7 @@ class Uzp extends DBase{
       $html = "<h3 class='center'>Spleen</h3>"
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Spleen lesions", "spleen_les", $data)
-              . $this->generateInputPair("Spleen weight (mg)", "spleen_weight", $data, "number")
+              . $this->generateInputPair("Spleen weight (mg)", "spleen_weight", $data, "number", null, null, null, array("min" => 1, "max" => 10000))
               . $this->generateInputPair("Scan spleen 1", "spleen_1_bc", $data, "barcode", null, null, "Frozen")
               . $this->generateInputPair("Scan spleen 2", "spleen_2_bc", $data, "barcode", null, null, "VTM")
               . $this->generateInputPair("Scan spleen 3", "spleen_3_bc", $data, "barcode", null, null, "10% formalin")
@@ -416,7 +420,7 @@ class Uzp extends DBase{
       $html = "<h3 class='center'>Kidney</h3>"
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Kidney lesions", "kidney_les", $data)
-              . $this->generateInputPair("Kidney weight (mg)", "kidney_weight", $data, "number")
+              . $this->generateInputPair("Kidney weight (mg)", "kidney_weight", $data, "number", null, null, null, array("min" => 1, "max" => 10000))
               . $this->generateInputPair("Scan kidney 1", "kidney_1_bc", $data, "barcode", null, null, "Frozen")
               . $this->generateInputPair("Scan kidney 2", "kidney_2_bc", $data, "barcode", null, null, "VTM")
               . $this->generateInputPair("Scan kidney 3", "kidney_3_bc", $data, "barcode", null, null, "10% fromalin")
@@ -430,7 +434,7 @@ class Uzp extends DBase{
       $html = "<h3 class='center'>Adrenal</h3>"
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Adrenal lesions", "adrenal_les", $data)
-              . $this->generateInputPair("Adrenal weight (mg)", "adrenal_weight", $data, "number")
+              . $this->generateInputPair("Adrenal weight (mg)", "adrenal_weight", $data, "number", null, null, null, array("min" => 1, "max" => 10000))
               . $this->generateInputPair("Scan adrenal", "adrenal_bc", $data, "barcode")
               . "</div>";
       $this->initUZPJs("step11", $html, "adrenal_bc_input", "step10", "step12", $animalId);
@@ -442,7 +446,7 @@ class Uzp extends DBase{
       $html = "<h3 class='center'>Heart</h3>"
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Heart lesions", "heart_les", $data)
-              . $this->generateInputPair("Heart weight", "heart_weight", $data, "number")
+              . $this->generateInputPair("Heart weight", "heart_weight", $data, "number", null, null, null, array("min" => 1, "max" => 10000))
               . $this->generateInputPair("Scan heart", "heart_bc", $data, "barcode", null, null, "Frozen")
               . "</div>";
       $this->initUZPJs("step12", $html, "heart_bc_input", "step11", "step13", $animalId);
@@ -454,7 +458,7 @@ class Uzp extends DBase{
       $html = "<h3 class='center'>Lung</h3>"
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Lung lesions", "lung_les", $data)
-              . $this->generateInputPair("Lung weight", "lung_weight", $data, "number")
+              . $this->generateInputPair("Lung weight", "lung_weight", $data, "number", null, null, null, array("min" => 1, "max" => 10000))
               . $this->generateInputPair("Scan lung 1", "lung_1_bc", $data, "barcode", null, null, "Frozen")
               . $this->generateInputPair("Scan lung 2", "lung_2_bc", $data, "barcode", null, null, "VTM")
               . $this->generateInputPair("Scan lung 3", "lung_3_bc", $data, "barcode", null, null, "10% formalin")
@@ -483,7 +487,7 @@ class Uzp extends DBase{
       $html = "<h3 class='center'>Brain</h3>"
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Brain lesions", "brain_les", $data)
-              . $this->generateInputPair("Brain weight", "brain_weight", $data, "number")
+              . $this->generateInputPair("Brain weight", "brain_weight", $data, "number", null, null, null, array("min" => 1, "max" => 20000))
               . $this->generateInputPair("Scan brain", "brain_bc", $data, "barcode", null, null, "Frozen")
               . "</div>";
       $this->initUZPJs("step15", $html, "brain_bc_input", "step14", "step16", $animalId);
@@ -537,27 +541,29 @@ class Uzp extends DBase{
               . $this->generateTextAreaPair("Large intestines lesions", "largeint_les", $data)
               . $this->generateInputPair("Scan large intestines", "largeint_bc", $data, "barcode", null, null, "10% formalin")
               . "</div>";
-      $this->initUZPJs("step19", $html, "largeint_bc", "step18", "step20", $animalId);
+      $this->initUZPJs("step19", $html, "largeint_bc_input", "step18", "step20", $animalId);
    }
    
    private function initPmStep20() {
       $animalId = $_GET['animal'];
       $data = $this->getAnimalData($_GET['animal']);
-      $html = "<h3 class='center'>Carcas</h3>"
+      $html = "<h3 class='center'>Carcass</h3>"
               . "<div class='input_container'>"
-              . $this->generateInputPair("Carcas barcode", "carcas_bc", $data, "barcode")
+              . $this->generateInputPair("Carcass barcode", "carcas_bc", $data, "barcode")
               . $this->generateTextAreaPair("General Comment", "general_comment", $data)
               . "</div>";
       $this->initUZPJs("step20", $html, "carcas_bc_input", "step19", null, $animalId);
    }
    
-   private function generateInputPair($label, $id, $data = null, $type = 'text', $dependsOn = null, $possibleValues = null, $comment = null) {
+   private function generateInputPair($label, $id, $data = null, $type = 'text', $dependsOn = null, $possibleValues = null, $comment = null, $bounds = null) {
       $extraStyle = "";
       if($type == 'barcode') {
+         $idSelect = "";
+         if($data != null) $idSelect = " and id != ".$data['id'];
          $extraStyle .= " barcode-input";
          $type = 'text';
          //make the barcode follows the syntax for the previous barcode
-         $query = "select $id from postmortem where $id != '' order by id desc limit 1";//fetch the last barcode
+         $query = "select $id from postmortem where $id != '' $idSelect order by id desc limit 1";//fetch the last barcode
          $result = $this->Dbase->ExecuteQuery($query);
          if(is_array($result) && count($result) == 1) {
             $lastBarcode = $result[0][$id];
@@ -569,6 +575,15 @@ class Uzp extends DBase{
 </script>
 <?php
          }
+      }
+      else if($type == 'number' && $bounds != null){
+?>
+<script type="text/javascript">
+   $(document).ready(function() {
+      window.uzp_lab.addRule("<?php echo $id;?>", 'bounds', <?php echo json_encode($bounds);?>);
+   });
+</script>
+<?php
       }
       $defaultValue = '';
       $disabled = '';
@@ -746,7 +761,7 @@ class Uzp extends DBase{
             $response['animal'] = $animalId;
             //check if we are in the last step
             if($currStep == "step20" && $direction == "next") {
-               $mandatory = array("vet", "assistant", "animal_id", "animal_class", "weight", "species", "id_certainty", "age", "sex", "pregnant", "lactating", "cond_samp", "is_dis_suspected", "bcs", "body_length", "ear_length", "hfoot_length", "tail_length", "full_body_length", "anterior_facial", "lateral_facial");
+               $mandatory = array("vet", "assistant", "animal_id", "animal_class", "weight", "species", "id_certainty", "age", "sex", "cond_samp", "is_dis_suspected", "bcs", "body_length", "ear_length", "hfoot_length", "tail_length", "full_body_length", "anterior_facial", "lateral_facial");
                $query = "select * from postmortem where id = :animal";
                $result = $this->Dbase->ExecuteQuery($query, array("animal" => $animalId));
                if(is_array($result) && count($result) == 1) {

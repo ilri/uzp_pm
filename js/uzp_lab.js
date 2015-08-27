@@ -3,7 +3,7 @@
  *
  * @returns {Uzp}
  */
-function Uzp(currUri, currHtml, lastInputId) {
+function Uzp(currUri, lastInputId) {
    window.uzp_lab = this;
 
    // initialize the main variables
@@ -16,14 +16,12 @@ function Uzp(currUri, currHtml, lastInputId) {
    // create the notification place
    this.prevNotificationClass = 'info';
    this.currUri = currUri;
-   this.currHtml = currHtml;
    this.lastInputId = lastInputId;
    this.prevUri = null;
    this.nextUri = null;
    this.animalId = null;
    this.rules = {};
    
-   $("#content_container").html(currHtml);
    this.inputTypes = "input,select,textarea";
    this.inputSuffix = "_input";
    //bind key presses
@@ -43,7 +41,6 @@ function Uzp(currUri, currHtml, lastInputId) {
                      i++;
                   }
                   if ((i + 1) < allInputs.length){
-                     console.log("here");
                      //check for the next focusable input
                      var nextInput = i + 1;
                      while(nextInput < allInputs.length) {
@@ -159,13 +156,17 @@ Uzp.prototype.createSampleRegex = function(sampleBarcode){
 };
 
 Uzp.prototype.addRule = function(inputId, ruleType, data) {
+   if(typeof window.uzp_lab.rules[inputId] == 'undefined'){
+      window.uzp_lab.rules[inputId] = {};
+   }
    if(ruleType == 'regex') {//make sure the value of the input meets the specifed regex
       console.log("Adding regex rule for "+inputId);
       var regex = window.uzp_lab.createSampleRegex(data);
-      if(typeof window.uzp_lab.rules[inputId] == 'undefined'){
-         window.uzp_lab.rules[inputId] = {};
-      }
       window.uzp_lab.rules[inputId]['regex'] = regex;
+   }
+   else if(ruleType == 'bounds') {
+      console.log("Adding bounds to "+inputId);
+      window.uzp_lab.rules[inputId]['bounds'] = data;
    }
 };
 
@@ -202,6 +203,20 @@ Uzp.prototype.validateValues = function(data) {
                response = {error:true, message:currInputId+' does not follow the required format'};
                $("#"+currInputId+window.uzp_lab.inputSuffix).focus();
                return response;
+            }
+         }
+         if(typeof currRules['bounds'] != 'undefined') {
+            if(typeof data[currInputId] != 'undefined' && data[currInputId] != null && $.isNumeric(data[currInputId])) {
+               if(data[currInputId] < currRules['bounds'].min) {
+                  response = {error:true, message:currInputId+' is less than '+currRules['bounds'].min};
+                  $("#"+currInputId+window.uzp_lab.inputSuffix).focus();
+                  return response;
+               }
+               else if(data[currInputId] > currRules['bounds'].max) {
+                  response = {error:true, message:currInputId+' is greater than '+currRules['bounds'].max};
+                  $("#"+currInputId+window.uzp_lab.inputSuffix).focus();
+                  return response;
+               }
             }
          }
       }

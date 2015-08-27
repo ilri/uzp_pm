@@ -100,6 +100,7 @@ class Uzp extends DBase{
          elseif(OPTIONS_REQUESTED_SUB_MODULE == 'step19') $this->initPmStep19();
          elseif(OPTIONS_REQUESTED_SUB_MODULE == 'step20') $this->initPmStep20();
          elseif(OPTIONS_REQUESTED_SUB_MODULE == 'commit') $this->commitStepData();
+         elseif(OPTIONS_REQUESTED_SUB_MODULE == 'upload') $this->uploadFile();
       }
       elseif(OPTIONS_REQUESTED_SUB_MODULE == 'aliq') {
          
@@ -176,6 +177,7 @@ class Uzp extends DBase{
 <script type="text/javascript" src="<?php echo OPTIONS_COMMON_FOLDER_PATH; ?>jqwidgets/jqwidgets/jqxinput.js"></script>
 <script type="text/javascript" src="<?php echo OPTIONS_COMMON_FOLDER_PATH; ?>jqwidgets/jqwidgets/jqxbuttons.js"></script>
 <script type="text/javascript" src="<?php echo OPTIONS_COMMON_FOLDER_PATH; ?>jqwidgets/jqwidgets/jqxnotification.js"></script>
+<script type="text/javascript" src="<?php echo OPTIONS_COMMON_FOLDER_PATH; ?>jqwidgets/jqwidgets/jqxfileupload.js"></script>
 <a href="./?page=" style="float: right; margin-bottom: 10px; margin-right: 20px;">Home</a> <br />
 <div id="notification_box"><div id="msg"></div></div>
 <?php
@@ -337,11 +339,11 @@ class Uzp extends DBase{
               . $this->generateInputPair("Tibia length (mm)", "tibia_length", $data, "number", "animal_class", array("bat"), $tibiaComment, array("min" => 10, "max" => 200))//only if bat
               . $this->generateInputPair("Hind foot length (mm)", "hfoot_length", $data, "number", null, null, $hindFootComment, array("min" => 1, "max" => 300))
               . $this->generateInputPair("Tail length (mm)", "tail_length", $data, "number", null, null, $tailComment, array("min" => 10, "max" => 1000))
-              . $this->generateInputPair("Full body", "full_body_length", $data, "number", null, null, $fullBodyComment)
-              . $this->generateInputPair("Full anterior facial", "anterior_facial", $data, "number")
-              . $this->generateInputPair("Full lateral facial/head", "lateral_facial", $data, "number")
-              . $this->generateInputPair("Parted pelage on dorsum", "pp_dorsum", $data, "number", "animal_class", array("bat"))//only if bat
-              . $this->generateInputPair("Parted pelage on vetrum", "pp_vetrum", $data, "number", "animal_class", array("bat"))//only if bat
+              . $this->generateFileUploadPair("Full body", "full_body_length", $data, null, null, $fullBodyComment)
+              . $this->generateFileUploadPair("Full anterior facial", "anterior_facial", $data)
+              . $this->generateFileUploadPair("Full lateral facial/head", "lateral_facial", $data)
+              . $this->generateFileUploadPair("Parted pelage on dorsum", "pp_dorsum", $data, "animal_class", array("bat"))//only if bat
+              . $this->generateFileUploadPair("Parted pelage on vetrum", "pp_vetrum", $data, "animal_class", array("bat"))//only if bat
               . "</div>";
       $this->initUZPJs("step4", $html, "pp_vetrum_input", "step3", "step5", $animalId);
    }
@@ -689,6 +691,46 @@ class Uzp extends DBase{
       return $html;
    }
    
+   private function generateFileUploadPair($label, $id, $data = null, $dependsOn = null, $possibleValues = null, $comment = null) {
+      $defaultValue = '';
+      $disabled = '';
+      if($data != null){
+         if(isset($data[$id])) $defaultValue = $data[$id];
+         if($dependsOn != null && isset($data[$dependsOn])) {
+            if(in_array($data[$dependsOn], $possibleValues)) {//depends on value is in the possible values
+               $disabled = '';
+            }
+            else {
+               $disabled = 'disabled';
+            }
+         }
+      }
+      if($dependsOn != null) {
+         //set on javascript
+?>
+<script type="text/javascript">
+   $(document).ready(function(){
+      window.uzp_lab.setDependsOn("<?php echo $id;?>", "<?php echo $dependsOn;?>", <?php echo json_encode($possibleValues);?>);
+   });
+</script>
+<?php
+      }
+      $input_id = $id."_input";
+      $uploader_id = $id."_uploader";
+      $html = "<div class='file_drop_area'> <label>$label</label><div id='$uploader_id' class='file_input'><input type='text' name='$input_id' id='$input_id' value='$defaultValue' style='width:280px;' disabled /></div></div>";
+      if($comment != null) {
+         $html .= "<div class='input_comment'>$comment</div>";
+      }
+?>
+<script type="text/javascript">
+   $(document).ready(function(){
+      window.uzp_lab.registerUploader("<?php echo $id;?>");
+   });
+</script>
+<?php
+      return $html;
+   }
+   
    private function commitStepData() {
       $response = array();
       $currStep = $_GET['curr_step'];
@@ -848,6 +890,21 @@ class Uzp extends DBase{
          $otherBarcodes[$animalId][$field] = $barcode;
       }
       return $otherBarcodes;
+   }
+   
+   private function uploadFile() {
+      $time = new DateTime('now');
+      $dir = "files/";
+      if(!file_exists($dir)) {
+         mkdir($dir, 0777);//not sure if this are the best permissions
+      }
+      $targetFilename = $dir.$_FILES["data_file"]["name"];
+      $uploaded = move_uploaded_file($_FILES["data_file"]["tmp_name"], $targetFilename);
+      $response = array("error" => false, "fileName" => $targetFilename);
+      if($uploaded == false) {
+         $response["error"] = true;
+      }
+      die(json_encode($response));
    }
 }
 ?>

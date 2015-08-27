@@ -24,6 +24,7 @@ function Uzp(currUri, lastInputId) {
    
    this.inputTypes = "input,select,textarea";
    this.inputSuffix = "_input";
+   this.uploaderSuffix = "_uploader";
    //bind key presses
    $(":input").bind("keydown", function(e) {
       if (e.keyCode == 13) {
@@ -75,6 +76,37 @@ function Uzp(currUri, lastInputId) {
          window.uzp_lab.commit('previous');
       });
    });
+};
+
+Uzp.prototype.registerUploader = function(inputId) {
+   var uploaderId = inputId + window.uzp_lab.uploaderSuffix;
+   $("#"+uploaderId).jqxFileUpload({
+      width:400,
+      fileInputName: "data_file",
+      uploadUrl: "mod_ajax.php?page=pm&do=upload",
+      autoUpload: true
+   });
+   
+   //register an on pre and post upload 
+   $("#"+uploaderId).on("uploadStart", function(){
+      //reset the name stored in the hidden input
+      $("#"+inputId+window.uzp_lab.inputSuffix).val("");
+   });
+   $("#"+uploaderId).on("uploadEnd", window.uzp_lab.onUploadEnd);
+};
+
+Uzp.prototype.onUploadEnd = function(event) {
+   var inputId = $(event.target).attr("id").substr(0, $(event.target).attr("id").indexOf(window.uzp_lab.uploaderSuffix));
+   var serverResponse = event.args.response;
+   var jsonResponse = $.parseJSON(serverResponse);
+   if(jsonResponse.error == false) {
+      var fileName = jsonResponse.fileName;
+      $("#"+inputId+window.uzp_lab.inputSuffix).val(fileName);
+      window.uzp_lab.showNotification("Successfully uploaded "+inputId+" file", 'info');
+   }
+   else {
+      window.uzp_lab.showNotification("Could not upload file for "+inputId, 'error');
+   }
 };
 
 Uzp.prototype.goToNextPage = function(animalId) {
@@ -181,7 +213,7 @@ Uzp.prototype.getInputValues = function (){
    var allInputs = $(window.uzp_lab.inputTypes);
    for(var index = 0; index < allInputs.length; index++) {
       var currInput = $(allInputs[index]);
-      if(currInput.attr('id').indexOf(window.uzp_lab.inputSuffix) > 0) {//the input id contains the input suffix
+      if(typeof currInput.attr('id') != 'undefined' && currInput.attr('id').indexOf(window.uzp_lab.inputSuffix) > 0) {//the input id contains the input suffix
          var id = currInput.attr('id').substr(0, (currInput.attr('id').indexOf(window.uzp_lab.inputSuffix)));
          values[id] = currInput.val();
          if(values[id] == '') values[id] = null;

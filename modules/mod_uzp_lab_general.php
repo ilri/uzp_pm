@@ -102,10 +102,7 @@ class Uzp extends DBase{
          elseif(OPTIONS_REQUESTED_SUB_MODULE == 'commit') $this->commitStepData();
          elseif(OPTIONS_REQUESTED_SUB_MODULE == 'upload') $this->uploadFile();
       }
-      elseif(OPTIONS_REQUESTED_SUB_MODULE == 'aliq') {
-         
-      }
-      elseif(OPTIONS_REQUESTED_SUB_MODULE == 'backup') {
+      elseif(OPTIONS_REQUESTED_MODULE == 'backup') {
          $this->dumpData();
       }
    }
@@ -116,15 +113,33 @@ class Uzp extends DBase{
     * @return type
     */
    private function dumpData() {
-        if(!file_exists(Config::$config['rootdir']."\downloads")) mkdir(Config::$config['rootdir']."\downloads");
+      if(!file_exists(Config::$config['rootdir'].DIRECTORY_SEPARATOR."downloads")) mkdir(Config::$config['rootdir'].DIRECTORY_SEPARATOR."downloads");
 		$date = new DateTime();
-		$filename = Config::$config['rootdir']."\downloads\uzp_99hh_".$date->format('Y-m-d_H-i-s').'.sql';
-		$zipName = $filename.".zip";
+      $directory = Config::$config['rootdir'].DIRECTORY_SEPARATOR."downloads".DIRECTORY_SEPARATOR."uzp_99hh_".$date->format('Y-m-d_H-i-s');
+      mkdir($directory);
+		$filename = $directory.DIRECTORY_SEPARATOR.'database.sql';
+		$zipName = $directory.".zip";
 		$command = Config::$config['mysqldump']." -u ".Config::$config['user']." -p".Config::$config['pass']." ".Config::$config['dbase'].' > '.$filename;
 		shell_exec($command);
 		$zip = new ZipArchive();
 		$zip->open($zipName, ZipArchive::CREATE);
 		$zip->addFile($filename, basename($filename));
+      $zip->addEmptyDir("files");
+      $files = new RecursiveIteratorIterator(
+         new RecursiveDirectoryIterator(Config::$config['rootdir'].DIRECTORY_SEPARATOR."files"),
+         RecursiveIteratorIterator::LEAVES_ONLY
+      );
+      foreach ($files as $name => $file) {
+         // Skip directories (they would be added automatically)
+         if (!$file->isDir()) {
+             // Get real and relative path for current file
+             $filePath = $file->getRealPath();
+             $relativePath = substr($filePath, strlen(Config::$config['rootdir'].DIRECTORY_SEPARATOR."files") + 1);
+
+             // Add current file to archive
+             $zip->addFile($filePath, "files".DIRECTORY_SEPARATOR.$relativePath);
+         }
+      }
 		$zip->close();
 		header('Content-Description: File Transfer');
 		header('Content-Type: application/zip');
@@ -136,8 +151,28 @@ class Uzp extends DBase{
 		ob_clean();
 		flush();
 		readfile($zipName);
+      unlink($zipName);
+      $this->deleteDir($directory);
 		return;
    }
+   
+   public static function deleteDir($dirPath) {
+    if (! is_dir($dirPath)) {
+        throw new InvalidArgumentException("$dirPath must be a directory");
+    }
+    if (substr($dirPath, strlen($dirPath) - 1, 1) != '/') {
+        $dirPath .= '/';
+    }
+    $files = glob($dirPath . '*', GLOB_MARK);
+    foreach ($files as $file) {
+        if (is_dir($file)) {
+            self::deleteDir($file);
+        } else {
+            unlink($file);
+        }
+    }
+    rmdir($dirPath);
+}
 
    /**
     * Creates the home page of the lab system
@@ -153,8 +188,8 @@ class Uzp extends DBase{
    <div class="user_options">
       <ul>
          <li><a href="?page=pm">Postmoterm</a></li>
-         <li><a href="?page=aliq">Aliquoting</a></li>
-         <li><a href="?page=backup">Backup</a></li>
+         <li><a href="?page=archive">Archive</a></li>
+         <li><a href="mod_ajax.php?page=backup">Backup</a></li>
       </ul>
    </div>
 </div>
@@ -894,7 +929,7 @@ class Uzp extends DBase{
    
    private function uploadFile() {
       $time = new DateTime('now');
-      $dir = "files/";
+      $dir = "files".DIRECTORY_SEPARATOR;
       if(!file_exists($dir)) {
          mkdir($dir, 0777);//not sure if this are the best permissions
       }

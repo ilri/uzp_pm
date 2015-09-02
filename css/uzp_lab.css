@@ -61,6 +61,7 @@ input[type=text]{ height: 30px; }
 #receive_samples .received, #broth_enrichment .received, #mcconky_plate .received, #colonies .received, #ast_result .received, #biochem_test .received{ margin: 5px 5px 5px 710px; width: 205px; min-height: 300px; border: 1px dotted black; }
 #ast_result, #biochem_test{height: 650px;}
 #colonies_storage #plate_layout{width: 550px; height: 550px; margin-left: 350px; margin-top: 80px; }
+#plate_layout{display: table-cell; padding-left: 150px;}
 #sample_format, #broth_format, #mcconky_format, #colonies_format, #plate_format, #media_format, #colony_format, #drug_name, #drug_value, #no_eppendorfs, #colony_pos{ float: left; }
 #scanned_colonies{ height: 100px; width: 200px; border: 1px dotted black; margin: 2px auto; }
 #current_user{ margin-left: 5px; padding-left: 5px; }

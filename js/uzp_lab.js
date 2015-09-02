@@ -3,7 +3,7 @@
  *
  * @returns {Uzp}
  */
-function Uzp(currUri, lastInputId) {
+function Uzp(page, currUri, lastInputId) {
    window.uzp_lab = this;
 
    // initialize the main variables
@@ -20,6 +20,7 @@ function Uzp(currUri, lastInputId) {
    this.prevUri = null;
    this.nextUri = null;
    this.animalId = null;
+   this.page = page;
    this.rules = {};
    
    this.inputTypes = "input,select,textarea";
@@ -28,39 +29,44 @@ function Uzp(currUri, lastInputId) {
    //bind key presses
    $(":input").bind("keydown", function(e) {
       if (e.keyCode == 13) {
-         var allInputs = $(window.uzp_lab.inputTypes);
-         console.log(allInputs);
-         for (var i = 0; i < allInputs.length; i++) {
-            if (allInputs[i] == this) {
-               console.log($(allInputs[i]).attr('id'));
-               console.log(window.uzp_lab.lastInputId);
-               if($(allInputs[i]).attr('id') == window.uzp_lab.lastInputId){
-                  window.uzp_lab.commit('next');
-               }
-               else {
-                  while ((allInputs[i]).name == (allInputs[i + 1]).name) {
-                     i++;
+         if(window.uzp_lab.page == "pm") {
+            var allInputs = $(window.uzp_lab.inputTypes);
+            console.log(allInputs);
+            for (var i = 0; i < allInputs.length; i++) {
+               if (allInputs[i] == this) {
+                  console.log($(allInputs[i]).attr('id'));
+                  console.log(window.uzp_lab.lastInputId);
+                  if($(allInputs[i]).attr('id') == window.uzp_lab.lastInputId){
+                     window.uzp_lab.commit('next');
                   }
-                  if ((i + 1) < allInputs.length){
-                     //check for the next focusable input
-                     var nextInput = i + 1;
-                     while(nextInput < allInputs.length) {
-                        if($(allInputs[nextInput]).is(":disabled")){
-                           if(nextInput == (allInputs.length - 1)) {//last input
-                              window.uzp_lab.commit('next');
+                  else {
+                     while ((allInputs[i]).name == (allInputs[i + 1]).name) {
+                        i++;
+                     }
+                     if ((i + 1) < allInputs.length){
+                        //check for the next focusable input
+                        var nextInput = i + 1;
+                        while(nextInput < allInputs.length) {
+                           if($(allInputs[nextInput]).is(":disabled")){
+                              if(nextInput == (allInputs.length - 1)) {//last input
+                                 window.uzp_lab.commit('next');
+                              }
+                              else {
+                                 nextInput++;
+                              }
                            }
                            else {
-                              nextInput++;
+                              $($(allInputs[nextInput])).focus();
+                              break;
                            }
-                        }
-                        else {
-                           $($(allInputs[nextInput])).focus();
-                           break;
                         }
                      }
                   }
                }
             }
+         }
+         else {
+            window.uzp_lab.saveColoniesPositions();
          }
       }
    });
@@ -83,7 +89,7 @@ Uzp.prototype.registerUploader = function(inputId) {
    $("#"+uploaderId).jqxFileUpload({
       width:400,
       fileInputName: "data_file",
-      uploadUrl: "mod_ajax.php?page=pm&do=upload",
+      uploadUrl: "mod_ajax.php?page="+window.uzp_lab.page+"&do=upload",
       autoUpload: true
    });
    
@@ -110,12 +116,12 @@ Uzp.prototype.onUploadEnd = function(event) {
 };
 
 Uzp.prototype.goToNextPage = function(animalId) {
-   if(window.uzp_lab.nextUri != null) window.location.href = "?page=pm&do="+window.uzp_lab.nextUri+"&animal="+animalId;
-   else window.location.href = "?page=pm";
+   if(window.uzp_lab.nextUri != null) window.location.href = "?page="+window.uzp_lab.page+"&do="+window.uzp_lab.nextUri+"&animal="+animalId;
+   else window.location.href = "?page="+window.uzp_lab.page+"";
 };
 
 Uzp.prototype.goToPreviousPage = function(animalId) {
-   if(window.uzp_lab.prevUri != null) window.location.href = "?page=pm&do="+window.uzp_lab.prevUri+"&animal="+animalId;
+   if(window.uzp_lab.prevUri != null) window.location.href = "?page="+window.uzp_lab.page+"&do="+window.uzp_lab.prevUri+"&animal="+animalId;
 };
 
 Uzp.prototype.setAnimalId = function(animalId) {
@@ -200,6 +206,10 @@ Uzp.prototype.addRule = function(inputId, ruleType, data) {
       console.log("Adding bounds to "+inputId);
       window.uzp_lab.rules[inputId]['bounds'] = data;
    }
+   else if(ruleType == 'required') {
+      console.log("Required rule for "+inputId);
+      window.uzp_lab.rules[inputId]['required'] = data;
+   }
 };
 
 /**
@@ -251,6 +261,13 @@ Uzp.prototype.validateValues = function(data) {
                }
             }
          }
+         if(typeof currRules['required'] != 'undefined') {
+            if(typeof data[currInputId] == 'undefined' || data[currInputId] == null || data[currInputId].length == 0) {
+               response = {error:true, message:currInputId+' cannot be empty'};
+               $("#"+currInputId+window.uzp_lab.inputSuffix).focus();
+               return response;
+            }
+         }
       }
    }
    return response;
@@ -265,7 +282,7 @@ Uzp.prototype.commit = function(direction) {
    var validation = window.uzp_lab.validateValues(inputValues);
    if(validation.error == false) {
       $.ajax({
-         type:"POST", url: "mod_ajax.php?page=pm&do=commit&curr_step="+window.uzp_lab.currUri+"&animal="+window.uzp_lab.animalId+"&direction="+direction, async: false, dataType:'json', data: inputValues,
+         type:"POST", url: "mod_ajax.php?page="+window.uzp_lab.page+"&do=commit&curr_step="+window.uzp_lab.currUri+"&animal="+window.uzp_lab.animalId+"&direction="+direction, async: false, dataType:'json', data: inputValues,
          success: function (data) {
             console.log(data);
             if(data.error === true){
@@ -286,5 +303,70 @@ Uzp.prototype.commit = function(direction) {
    }
    else {
       window.uzp_lab.showNotification(validation.message, 'error');
+   }
+};
+
+Uzp.prototype.saveColoniesPositions = function(){
+   // get the sample format and the received sample
+   var colonies_format = $('[name=colonies_format]').val(), storage_box = $('[name=storage_box]').val().toUpperCase(), sample = $('[name=sample]').val().toUpperCase(), cur_user = $('#usersId').val(), cur_pos = $('[name=colony_pos]').val();
+
+   if(sample === ''){
+      uzp.showNotification('Please scan/enter the sample to save.', 'error');
+      $("[name=sample]").focus();
+      return;
+   }
+   if(colonies_format === '' || colonies_format === undefined){
+      uzp.showNotification('Please scan a sample barcode for the colonies. It should be something like \'BSR010959\'', 'error');
+      $("[name=colonies_format]").focus();
+      return;
+   }
+   if(storage_box === '' || storage_box === undefined){
+      uzp.showNotification('Please scan the barcode for the storage boxes. It should be something like \'AVAQ70919\'.', 'error');
+      $("[name=storage_box]").focus();
+      return;
+   }
+   if(cur_user === '0'){
+      uzp.showNotification('Please select the current user.', 'error');
+      return;
+   }
+   if(cur_pos === ''){
+      uzp.showNotification('Please enter the current position of the colony.', 'error');
+      return;
+   }
+
+   //lets validate the aliquot format
+   var c_regex = uzp.createSampleRegex(colonies_format);
+   var b_regex = uzp.createSampleRegex(storage_box);
+
+   // check whether we are dealing with the field or broth sample
+   if(c_regex.test(sample) === true){
+      console.log(storage_box);
+      console.log(sample);
+      // save the colony to the next slot of this box
+      $.ajax({
+         type:"POST", url: "mod_ajax.php?page=archive&do=save", async: false, dataType:'json', data: {sample: sample, storage_box: storage_box, cur_user: cur_user, cur_pos: cur_pos},
+         success: function (data) {
+            console.log(data);
+            if(data.error === true){
+               uzp.showNotification(data.mssg, 'error');
+               $("[name=sample]").focus().val('');
+               return;
+            }
+            else{
+               // we have saved the sample well... lets prepare for the next sample
+               $("[name=sample]").focus().val('');
+               var suffix = sample.match(/([0-9]+)$/i);
+               $('#plate_layout .pos_'+cur_pos).html(suffix[0] +' ('+ cur_pos +')').css({'background-color': '#009D59'});
+               $('[name=colony_pos]').val(parseInt(cur_pos)+1);
+               uzp.showNotification(data.mssg, 'success');
+            }
+         }
+      });
+   }
+   else{
+      // we don't know the sample format...so reject it and invalidate all the other settings
+      uzp.showNotification('Error! Unknown format for the entered sample.'+sample, 'error');
+      $("[name=sample]").focus().val('');
+      return;
    }
 };

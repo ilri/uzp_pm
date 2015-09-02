@@ -105,6 +105,11 @@ class Uzp extends DBase{
       elseif(OPTIONS_REQUESTED_MODULE == 'backup') {
          $this->dumpData();
       }
+      elseif(OPTIONS_REQUESTED_MODULE == 'archive') {
+         if(OPTIONS_REQUESTED_SUB_MODULE == '') $this->initArchivingPage();
+         if(OPTIONS_REQUESTED_SUB_MODULE == 'save') $this->saveStoragePosition();
+         
+      }
    }
    
    /**
@@ -245,12 +250,12 @@ class Uzp extends DBase{
     * @param String $prevUri  The previous step uri. Set to null if none
     * @param String $nextUri  The next step uri. Set to null if none
     */
-   private function initUZPJs($uri, $html, $lastInputId, $prevUri, $nextUri, $animalId = null) {
+   private function initUZPJs($uri, $html, $lastInputId, $prevUri, $nextUri, $animalId = null, $page = "pm") {
       $this->setPmTemplate($prevUri, $nextUri);
 ?>
 <script type="text/javascript">
    $("#content_container").html("<?php echo $html;?>");
-   var uzp = new Uzp("<?php echo $uri;?>", "<?php echo $lastInputId;?>");
+   var uzp = new Uzp("<?php echo $page;?>","<?php echo $uri;?>", "<?php echo $lastInputId;?>");
 </script>
 <?php
       if($prevUri != null) {
@@ -592,7 +597,71 @@ class Uzp extends DBase{
       $this->initUZPJs("step20", $html, "carcas_bc_input", "step19", null, $animalId);
    }
    
-   private function generateInputPair($label, $id, $data = null, $type = 'text', $dependsOn = null, $possibleValues = null, $comment = null, $bounds = null) {
+   private function initArchivingPage(){
+      $userCombo = $this->usersCombo();
+      $layout = $this->storageBoxLayout(10, 10);
+?>
+    <link rel="stylesheet" href="<?php echo OPTIONS_COMMON_FOLDER_PATH; ?>jqwidgets/jqwidgets/styles/jqx.base.css" type="text/css" />
+    <script type="text/javascript" src="js/uzp_lab.js"></script>
+    <script type="text/javascript" src="<?php echo OPTIONS_COMMON_FOLDER_PATH; ?>jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="<?php echo OPTIONS_COMMON_FOLDER_PATH; ?>jqwidgets/jqwidgets/jqxcore.js"></script>
+    <script type="text/javascript" src="<?php echo OPTIONS_COMMON_FOLDER_PATH; ?>jqwidgets/jqwidgets/jqxinput.js"></script>
+    <script type="text/javascript" src="<?php echo OPTIONS_COMMON_FOLDER_PATH; ?>jqwidgets/jqwidgets/jqxbuttons.js"></script>
+    <script type="text/javascript" src="<?php echo OPTIONS_COMMON_FOLDER_PATH; ?>jqwidgets/jqwidgets/jqxnotification.js"></script>
+
+<div id="colonies_storage">
+   <h3 class="center" id="home_title">Logging collected samples</h3>
+   <a href="./?page=" style="float: left; margin-bottom: 10px;">Back</a> <br />
+   <div class="scan">
+      <div id="colonies_format"><label style="float: left;">Colonies format: </label>&nbsp;&nbsp;<input type="text" name="colonies_format" class="input-small" value="BDT013939" /></div>
+      <div id="plate_format"><label style="float: left;">Storage Box: </label>&nbsp;&nbsp;<input type="text" name="storage_box" class="input-small" value="TWAQ000" /></div>
+      <div id="colony_pos"><label style="float: left;">Position: </label>&nbsp;&nbsp;<input type="text" name="colony_pos" class="input-small" value="1" /></div>
+      <div id="current_user"><label style="float: left;">Current User: </label>&nbsp;&nbsp;<?php echo $userCombo; ?></div> <br />
+   </div>
+   <div class="left">
+      <input type="text" name="sample" />
+      <div>
+         <input style='margin-top: 5px;' type="submit" value="Submit" id='jqxSubmitButton' />
+      </div>
+   </div>
+   <div id="plate_layout"><?php echo $layout; ?></div>
+</div>
+<div id="notification_box"><div id="msg"></div></div>
+<script>
+   var uzp = new Uzp();
+
+   $('#whoisme .back').html('<a href=\'?page=\'>Back</a>');
+   $("[name=sample]").focus().jqxInput({placeHolder: "Scan a sample", width: 200, minLength: 1 });
+   $("#jqxSubmitButton").on('click', uzp.saveColonies).jqxButton({ width: '150'});
+
+   $(document).keypress(uzp.receiveSampleKeypress);
+</script>
+<?php
+   }
+   
+   /**
+    * Creates a layout for a box of size $sizeL x $sizeH
+    *
+    * @param   integer  $sizeL   The number of positions along the box length
+    * @param   integer  $sizeH   The number of positions on the width
+    */
+   private function storageBoxLayout($sizeL, $sizeH, $samples){
+      $k = 1;
+      $layout = '';
+      for($i = 0; $i < $sizeL; $i++){
+         $layout .= "<div class='row'>";
+         for($j = 0; $j < $sizeH; $j++, $k++){
+            // create a div for this box
+            if(isset($samples[$k])) $layout .= "<div class='pos occupied'>$k</div>";
+            else $layout .= "<div class='pos empty pos_$k'>$k</div>";
+         }
+         $layout .= "</div>";
+      }
+
+      return $layout;
+   }
+   
+   private function generateInputPair($label, $id, $data = null, $type = 'text', $dependsOn = null, $possibleValues = null, $comment = null, $bounds = null, $required = false) {
       $extraStyle = "";
       if($type == 'barcode') {
          $idSelect = "";
@@ -641,6 +710,16 @@ class Uzp extends DBase{
 <script type="text/javascript">
    $(document).ready(function(){
       window.uzp_lab.setDependsOn("<?php echo $id;?>", "<?php echo $dependsOn;?>", <?php echo json_encode($possibleValues);?>);
+   });
+</script>
+<?php
+      }
+      if($required == true) {
+         //set on javascript
+?>
+<script type="text/javascript">
+   $(document).ready(function(){
+      window.uzp_lab.addRule("<?php echo $id;?>", 'required', true);
    });
 </script>
 <?php
@@ -940,6 +1019,50 @@ class Uzp extends DBase{
          $response["error"] = true;
       }
       die(json_encode($response));
+   }
+   
+   private function usersCombo(){
+      $userVals = array("James Hassell", "Allan Ogendo", "Yukiko Nakamura");
+      $userIds = array("James Hassell", "Allan Ogendo", "Yukiko Nakamura");
+      $settings = array('items' => $userVals, 'values' => $userIds, 'firstValue' => 'Select One', 'name' => 'users', 'id' => 'usersId', 'class' => 'input-medium');
+      $userCombo = GeneralTasks::PopulateCombo($settings);
+
+      return $userCombo;
+   }
+   
+   private function getBoxId($label) {
+      $query = "select id from storage_box where box_label = :storage_box";
+      $result = $this->Dbase->ExecuteQuery($query, array("storage_box" => $label));
+      return $result;
+   }
+   
+   /**
+    * Save a colony in the specified box
+    */
+   private function saveStoragePosition(){
+      //$('[name=colonies_format]').val(), storage_box = $('[name=storage_box]').val().toUpperCase(), sample = $('[name=sample]').val().toUpperCase(), cur_user = $('#usersId').val(), cur_pos = $('[name=colony_pos]').val();
+      $result = $this->getBoxId($_POST['storage_box']);
+      $boxId = 0;
+      if($result === 1) die(json_encode(array('error' => true, 'mssg' => $this->Dbase->lastError)));
+      else if(is_array($result) && count($result) == 0) {
+         $query = "insert into storage_box(box_label, added_by) values(:storage_box, :cur_user)";
+         $this->Dbase->ExecuteQuery($query, array("storage_box" => $_POST['storage_box'], "cur_user" => $_POST['cur_user']));
+         $result = $this->getBoxId($_POST['storage_box']);
+         if($result === 1) die(json_encode(array('error' => true, 'mssg' => $this->Dbase->lastError)));
+         else if(count($result) == 0) die(json_encode(array('error' => true, 'mssg' => "Could not add ".$_POST['storage_box']." to the database")));
+         else if(count($result) == 1) $boxId = $result[0]['id'];
+      }
+      else if(is_array($result) && count($result) == 1) {
+         $boxId = $result[0]['id'];
+      }
+      if($boxId != 0) {
+         $query = "insert into stored_sample(storage_box_id, added_by, barcode, position) values(:box_id, :cur_user, :sample, :cur_pos)";
+         $result = $this->Dbase->ExecuteQuery($query, array("box_id" => $boxId, "cur_user" => $_POST['cur_user'], "sample" => $_POST['sample'], "cur_pos" => $_POST['cur_pos']));
+         if($result == 1) die(json_encode(array('error' => true, 'mssg' => $this->Dbase->lastError)));
+         else {
+            die(json_encode(array('error' => false, 'mssg' => 'Sample successfully logged')));
+         }
+      }
    }
 }
 ?>

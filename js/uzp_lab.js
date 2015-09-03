@@ -48,8 +48,9 @@ function Uzp(page, currUri, lastInputId) {
                         var nextInput = i + 1;
                         while(nextInput < allInputs.length) {
                            if($(allInputs[nextInput]).is(":disabled")){
-                              if(nextInput == (allInputs.length - 1)) {//last input
+                              if(nextInput >= (allInputs.length - 1)) {//last input
                                  window.uzp_lab.commit('next');
+                                 break;
                               }
                               else {
                                  nextInput++;

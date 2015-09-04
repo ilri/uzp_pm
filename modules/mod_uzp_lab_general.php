@@ -583,6 +583,7 @@ class Uzp extends DBase{
       $html = "<h3 class='center'>Carcass</h3>"
               . "<div class='input_container'>"
               . $this->generateInputPair("Carcass barcode", "carcas_bc", $data, "barcode", null, null, "CCS Prefix")//PRT for the carcass parts
+              . $this->generateInputPair("Body parts barcode", "parts_pot_bc", $data, "barcode", null, null, "PRT Prefix")//PRT for the carcass parts
               . $this->generateTextAreaPair("General Comment", "general_comment", $data)
               . "</div>";
       $this->initUZPJs("step20", $html, "general_comment_input", "step19", "step21", $animalId);

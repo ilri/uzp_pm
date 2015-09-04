@@ -301,7 +301,11 @@ class Uzp extends DBase{
             . $this->generateInputPair("EDTA", "edta", $data, "barcode", null, null, "BDT Prefix. If enough blood")
             . $this->generateInputPair("Serum", "serum", $data, "barcode", null, null, "BSR Prefix")
             . $this->generateInputPair("1st Blood Smear", "bsmear_1", $data, "barcode", null, null, "SLD Prefix. Dry 30 mins, then methanol")
+            . $this->generateInputPair("Slide box for 1st smear", "bsmear_1_box", $data, "barcode", null, null, "BREP Prefix")
+            . $this->generateInputPair("Position of 1st smear in box", "bsmear_1_pos", $data, "number")
             . $this->generateInputPair("2nd Blood Smear", "bsmear_2", $data, "barcode", null, null, "SLD Prefix. Dry 30 mins, then methanol")
+            . $this->generateInputPair("Slide box for 2nd smear", "bsmear_2_box", $data, "barcode", null, null, "BREP Prefix")
+            . $this->generateInputPair("Position of 2nd smear in box", "bsmear_2_pos", $data, "number")
             . $this->generateInputPair("1st Oropharyngeal", "osmear_1", $data, "barcode", null, null, "PRT Prefix. 200ul Lysis buffer")
             . $this->generateInputPair("2nd Oropharyngeal", "osmear_2", $data, "barcode", null, null, "PRT Prefix. 200ul VTM")
             . $this->generateInputPair("Wing biopsy", "wing", $data, "barcode", "animal_class", array("bat"), "ETH Prefix. 0.5mL 97% ethanol, in 1mL cryovial")//only if bat

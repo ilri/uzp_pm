@@ -52,7 +52,7 @@ class Uzp extends DBase{
          return;
       }
       $this->Dbase->InitializeLogs();
-      $this->barcodes = array("animal_id", "edta", "serum", "bsmear_1", "bsmear_2", "osmear_1", "osmear_2", "wing", "eparasite", "integument_bc", "pectoral_1_bc", "pectoral_2_bc", "ptagium_bc", "saliva_1_bc", "saliva_2_bc", "diaphgram_bc", "liver_1_bc", "liver_2_bc", "spleen_1_bc", "spleen_2_bc", "kidney_1_bc", "kidney_2_bc", "adrenal_bc", "heart_bc", "lung_1_bc", "pluck_bc", "urine_1_bc", "femur_1_bc", "brain_bc", "faeces_1_bc", "faeces_2_bc", "urogen_1_bc", "urogen_2_bc", "stomach_bc", "ileum_1_bc", "smallint_bc", "largeint_bc", "carcas_bc");
+      $this->barcodes = array("animal_id", "edta", "serum", "bsmear_1", "bsmear_2", "osmear_1", "osmear_2", /*"wing",*/ "eparasite", "integument_bc", "pectoral_1_bc", "pectoral_2_bc", "ptagium_bc", "saliva_1_bc", "saliva_2_bc", "diaphgram_bc", "liver_1_bc", "liver_2_bc", "spleen_1_bc", "spleen_2_bc", "kidney_1_bc", "kidney_2_bc", "adrenal_bc", "heart_bc", "lung_1_bc", "pluck_bc", "urine_1_bc", "femur_1_bc", "brain_bc", "faeces_1_bc", "faeces_2_bc", "urogen_1_bc", "urogen_2_bc", "stomach_bc", "ileum_1_bc", "smallint_bc", "largeint_bc", "carcas_bc");
    }
 
    public function sessionStart() {
@@ -310,7 +310,7 @@ class Uzp extends DBase{
             . $this->generateInputPair("Position of 2nd smear in box", "bsmear_2_pos", $data, "number")
             . $this->generateInputPair("1st Oropharyngeal", "osmear_1", $data, "barcode", null, null, "PRT Prefix. 200ul Lysis buffer")
             . $this->generateInputPair("2nd Oropharyngeal", "osmear_2", $data, "barcode", null, null, "PRT Prefix. 200ul VTM")
-            . $this->generateInputPair("Wing biopsy", "wing", $data, "barcode", "animal_class", array("bat"), "ETH Prefix. 0.5mL 97% ethanol, in 1mL cryovial")//only if bat
+            //. $this->generateInputPair("Wing biopsy", "wing", $data, "barcode", "animal_class", array("bat"), "ETH Prefix. 0.5mL 97% ethanol, in 1mL cryovial")//only if bat
             . $this->generateInputPair("Ectoparasite", "eparasite", $data, "barcode", null, null, "ETH Prefix. 97% ethanol")
             . "</div>";
       $this->initUZPJs("step2", $html, "eparasite_input", "step1", "step3", $_GET['animal']);

@@ -52,7 +52,7 @@ class Uzp extends DBase{
          return;
       }
       $this->Dbase->InitializeLogs();
-      $this->barcodes = array("animal_id", "edta", "serum", "bsmear_1", "bsmear_2", "osmear_1", "osmear_2", "wing", "eparasite", "integument_bc", "pectoral_mc", "ptagium_bc", "saliva_1_bc", "saliva_2_bc", "saliva_3_bc", "diaphgram_bc", "liver_1_bc", "liver_2_bc", "liver_3_bc", "spleen_1_bc", "spleen_2_bc", "spleen_3_bc", "kidney_1_bc", "kidney_2_bc", "kidney_3_bc", "adrenal_bc", "heart_bc", "lung_1_bc", "lung_2_bc", "lung_3_bc", "pluck_bc", "urine_1_bc", "urine_2_bc", "femur_1_bc", "femur_2_bc", "brain_bc", "faeces_1_bc", "faeces_2_bc", "faeces_3_bc", "urogen_1_bc", "urogen_2_bc", "stomach_bc", "ileum_1_bc", "ileum_2_bc", "smallint_bc", "largeint_bc", "carcas_bc");
+      $this->barcodes = array("animal_id", "edta", "serum", "bsmear_1", "bsmear_2", "osmear_1", "osmear_2", "wing", "eparasite", "integument_bc", "pectoral_mc", "ptagium_bc", "saliva_1_bc", "saliva_2_bc", "diaphgram_bc", "liver_1_bc", "liver_2_bc", "spleen_1_bc", "spleen_2_bc", "kidney_1_bc", "kidney_2_bc", "adrenal_bc", "heart_bc", "lung_1_bc", "lung_2_bc", "pluck_bc", "urine_1_bc", "femur_1_bc", "brain_bc", "faeces_1_bc", "faeces_2_bc", "urogen_1_bc", "urogen_2_bc", "stomach_bc", "ileum_1_bc", "smallint_bc", "largeint_bc", "carcas_bc");
    }
 
    public function sessionStart() {
@@ -287,7 +287,7 @@ class Uzp extends DBase{
             . "<div class='input_container'>"
             . $this->generateSelectPair("Vet", "vet", array("James Hassell" => "James Hassell", "Allan Ogendo" => "Allan Ogendo", "Yukiko Nakamura" => "Yukiko Nakamura"), $data)
             . $this->generateSelectPair("Assistant", "assistant", array("James Hassell" => "James Hassell", "Allan Ogendo" => "Allan Ogendo", "Yukiko Nakamura" => "Yukiko Nakamura"), $data)
-            . $this->generateInputPair("Animal Id", "animal_id", $data, "barcode")
+            . $this->generateInputPair("Animal Id", "animal_id", $data, "barcode", null, null, "UZ Prefix")
             . $this->generateSelectPair("Animal Class", "animal_class", array("rodent" => "Rodent", "bat" => "Bat"), $data)
             . "</div>";
       $this->initUZPJs("step1", $html, "animal_class_input", null, "step2", $_GET['animal']);
@@ -298,14 +298,14 @@ class Uzp extends DBase{
       $html = "<h3 class='center'>Samples</h3>"
             . "<div class='input_container'>"
             . $this->generateInputPair("Weight (grams)", "weight", $data, "number", null, null, null, array("min" =>0, "max" => 20000))
-            . $this->generateInputPair("EDTA", "edta", $data, "barcode", null, null, "If enough blood")
-            . $this->generateInputPair("Serum", "serum", $data, "barcode")
-            . $this->generateInputPair("1st Blood Smear", "bsmear_1", $data, "barcode", null, null, "Dry 30 mins, then methanol")
-            . $this->generateInputPair("2nd Blood Smear", "bsmear_2", $data, "barcode", null, null, "Dry 30 mins, then methanol")
-            . $this->generateInputPair("1st Oropharyngeal", "osmear_1", $data, "barcode", null, null, "200ul Lysis buffer")
-            . $this->generateInputPair("2nd Oropharyngeal", "osmear_2", $data, "barcode", null, null, "200ul VTM")
-            . $this->generateInputPair("Wing biopsy", "wing", $data, "barcode", "animal_class", array("bat"), "0.5mL 97% ethanol, in 1mL cryovial")//only if bat
-            . $this->generateInputPair("Ectoparasite", "eparasite", $data, "barcode", null, null, "97% ethanol")
+            . $this->generateInputPair("EDTA", "edta", $data, "barcode", null, null, "BDT Prefix. If enough blood")
+            . $this->generateInputPair("Serum", "serum", $data, "barcode", null, null, "BSR Prefix")
+            . $this->generateInputPair("1st Blood Smear", "bsmear_1", $data, "barcode", null, null, "SLD Prefix. Dry 30 mins, then methanol")
+            . $this->generateInputPair("2nd Blood Smear", "bsmear_2", $data, "barcode", null, null, "SLD Prefix. Dry 30 mins, then methanol")
+            . $this->generateInputPair("1st Oropharyngeal", "osmear_1", $data, "barcode", null, null, "PRT Prefix. 200ul Lysis buffer")
+            . $this->generateInputPair("2nd Oropharyngeal", "osmear_2", $data, "barcode", null, null, "PRT Prefix. 200ul VTM")
+            . $this->generateInputPair("Wing biopsy", "wing", $data, "barcode", "animal_class", array("bat"), "ETH Prefix. 0.5mL 97% ethanol, in 1mL cryovial")//only if bat
+            . $this->generateInputPair("Ectoparasite", "eparasite", $data, "barcode", null, null, "ETH Prefix. 97% ethanol")
             . "</div>";
       $this->initUZPJs("step2", $html, "eparasite_input", "step1", "step3", $_GET['animal']);
    }
@@ -394,11 +394,11 @@ class Uzp extends DBase{
       $html = "<h3 class='center'>Necropsy</h3>"
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Integument lesions", "integument_les", $data)
-              . $this->generateInputPair("Scan integument", "integument_bc", $data, "barcode", null, null, "10% formalin")
+              . $this->generateInputPair("Scan integument", "integument_bc", $data, "barcode", null, null, "PRT Prefix. 10% formalin")
               . $this->generateTextAreaPair("Pectoral muscle lesions", "pectoral_les", $data)
-              . $this->generateInputPair("Scan pectoral muscle", "pectoral_mc", $data, "barcode", null, null, "97% ethanol")
+              . $this->generateInputPair("Scan pectoral muscle", "pectoral_mc", $data, "barcode", null, null, "MSL Prefix. 97% ethanol")
               . $this->generateTextAreaPair("Ptagium lesions", "ptagium_les", $data, "animal_class", array("bat"))//only if bat
-              . $this->generateInputPair("Scan ptagium", "ptagium_bc", $data, "barcode", "animal_class", array("bat"), "97% ethanol")//only if bat
+              . $this->generateInputPair("Scan ptagium", "ptagium_bc", $data, "barcode", "animal_class", array("bat"), "PRT Prefix. 10% formalin")//only if bat
               . "</div>";
       $this->initUZPJs("step5", $html, "ptagium_bc_input", "step4", "step6", $animalId);//if bat then step6 else step7
    }
@@ -409,11 +409,10 @@ class Uzp extends DBase{
       $html = "<h3 class='center'>Salivary Glands</h3>"
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Salivary gland lesions", "saliva_les", $data, "animal_class", array("bat"))
-              . $this->generateInputPair("Scan salivary glands 1", "saliva_1_bc", $data, "barcode", "animal_class", array("bat"), "Frozen")
-              . $this->generateInputPair("Scan salivary glands 2", "saliva_2_bc", $data, "barcode", "animal_class", array("bat"), "VTM")
-              . $this->generateInputPair("Scan salivary glands 3", "saliva_3_bc", $data, "barcode", "animal_class", array("bat"), "10% formalin")
+              . $this->generateInputPair("Scan salivary glands 1", "saliva_1_bc", $data, "barcode", "animal_class", array("bat"), "PRT Prefix. Frozen")
+              . $this->generateInputPair("Scan salivary glands 2", "saliva_2_bc", $data, "barcode", "animal_class", array("bat"), "PRT Prefix. 10% formalin")
               . "</div>";
-      $this->initUZPJs("step6", $html, "saliva_3_bc_input", "step5", "step7", $animalId);
+      $this->initUZPJs("step6", $html, "saliva_2_bc_input", "step5", "step7", $animalId);
    }
    
    private function initPmStep7() {
@@ -423,7 +422,7 @@ class Uzp extends DBase{
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Cavity lesions", "cavity_les", $data)
               . $this->generateTextAreaPair("Diaphgram lesions", "diaphgram_les", $data)
-              . $this->generateInputPair("Scan diaphgram", "diaphgram_bc", $data, "barcode", null, null, "10% formalin")
+              . $this->generateInputPair("Scan diaphgram", "diaphgram_bc", $data, "barcode", null, null, "PRT Prefix. 10% formalin")
               . "</div>";
       $this->initUZPJs("step7", $html, "diaphgram_bc_input", "step6", "step8", $animalId);
    }
@@ -435,11 +434,10 @@ class Uzp extends DBase{
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Liver lesions", "liver_les", $data)
               . $this->generateInputPair("Liver weight (mg)", "liver_weight", $data, "number", null, null, null, array("min" => 1, "max" => 10000))
-              . $this->generateInputPair("Scan liver 1", "liver_1_bc", $data, "barcode", null, null, "Frozen")
-              . $this->generateInputPair("Scan liver 2", "liver_2_bc", $data, "barcode", null, null, "VTM")
-              . $this->generateInputPair("Scan liver 3", "liver_3_bc", $data, "barcode", null, null, "10% formalin")
+              . $this->generateInputPair("Scan liver 1", "liver_1_bc", $data, "barcode", null, null, "PRT Prefix. Frozen")
+              . $this->generateInputPair("Scan liver 2", "liver_2_bc", $data, "barcode", null, null, "PRT Prefix. 10% formalin")
               . "</div>";
-      $this->initUZPJs("step8", $html, "liver_3_bc_input", "step7", "step9", $animalId);
+      $this->initUZPJs("step8", $html, "liver_2_bc_input", "step7", "step9", $animalId);
    }
    
    private function initPmStep9() {
@@ -449,11 +447,10 @@ class Uzp extends DBase{
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Spleen lesions", "spleen_les", $data)
               . $this->generateInputPair("Spleen weight (mg)", "spleen_weight", $data, "number", null, null, null, array("min" => 1, "max" => 10000))
-              . $this->generateInputPair("Scan spleen 1", "spleen_1_bc", $data, "barcode", null, null, "Frozen")
-              . $this->generateInputPair("Scan spleen 2", "spleen_2_bc", $data, "barcode", null, null, "VTM")
-              . $this->generateInputPair("Scan spleen 3", "spleen_3_bc", $data, "barcode", null, null, "10% formalin")
+              . $this->generateInputPair("Scan spleen 1", "spleen_1_bc", $data, "barcode", null, null, "PRT Prefix. Frozen")
+              . $this->generateInputPair("Scan spleen 2", "spleen_2_bc", $data, "barcode", null, null, "PRT Prefix. 10% formalin")
               . "</div>";
-      $this->initUZPJs("step9", $html, "spleen_3_bc_input", "step8", "step10", $animalId);
+      $this->initUZPJs("step9", $html, "spleen_2_bc_input", "step8", "step10", $animalId);
    }
    
    private function initPmStep10() {
@@ -463,11 +460,10 @@ class Uzp extends DBase{
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Kidney lesions", "kidney_les", $data)
               . $this->generateInputPair("Kidney weight (mg)", "kidney_weight", $data, "number", null, null, null, array("min" => 1, "max" => 10000))
-              . $this->generateInputPair("Scan kidney 1", "kidney_1_bc", $data, "barcode", null, null, "Frozen")
-              . $this->generateInputPair("Scan kidney 2", "kidney_2_bc", $data, "barcode", null, null, "VTM")
-              . $this->generateInputPair("Scan kidney 3", "kidney_3_bc", $data, "barcode", null, null, "10% fromalin")
+              . $this->generateInputPair("Scan kidney 1", "kidney_1_bc", $data, "barcode", null, null, "PRT Prefix. Frozen")
+              . $this->generateInputPair("Scan kidney 2", "kidney_2_bc", $data, "barcode", null, null, "PRT Prefix. 10% fromalin")
               . "</div>";
-      $this->initUZPJs("step10", $html, "kidney_3_bc_input", "step9", "step11", $animalId);
+      $this->initUZPJs("step10", $html, "kidney_2_bc_input", "step9", "step11", $animalId);
    }
    
    private function initPmStep11() {
@@ -477,7 +473,7 @@ class Uzp extends DBase{
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Adrenal lesions", "adrenal_les", $data)
               . $this->generateInputPair("Adrenal weight (mg)", "adrenal_weight", $data, "number", null, null, null, array("min" => 1, "max" => 10000))
-              . $this->generateInputPair("Scan adrenal", "adrenal_bc", $data, "barcode")
+              . $this->generateInputPair("Scan adrenal", "adrenal_bc", $data, "barcode", null, null, "PRT Prefix. 10% formalin")
               . "</div>";
       $this->initUZPJs("step11", $html, "adrenal_bc_input", "step10", "step12", $animalId);
    }
@@ -489,7 +485,7 @@ class Uzp extends DBase{
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Heart lesions", "heart_les", $data)
               . $this->generateInputPair("Heart weight", "heart_weight", $data, "number", null, null, null, array("min" => 1, "max" => 10000))
-              . $this->generateInputPair("Scan heart", "heart_bc", $data, "barcode", null, null, "Frozen")
+              . $this->generateInputPair("Scan heart", "heart_bc", $data, "barcode", null, null, "PRT Prefix. Frozen")
               . "</div>";
       $this->initUZPJs("step12", $html, "heart_bc_input", "step11", "step13", $animalId);
    }
@@ -501,11 +497,10 @@ class Uzp extends DBase{
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Lung lesions", "lung_les", $data)
               . $this->generateInputPair("Lung weight", "lung_weight", $data, "number", null, null, null, array("min" => 1, "max" => 10000))
-              . $this->generateInputPair("Scan lung 1", "lung_1_bc", $data, "barcode", null, null, "Frozen")
-              . $this->generateInputPair("Scan lung 2", "lung_2_bc", $data, "barcode", null, null, "VTM")
-              . $this->generateInputPair("Scan lung 3", "lung_3_bc", $data, "barcode", null, null, "10% formalin")
+              . $this->generateInputPair("Scan lung 1", "lung_1_bc", $data, "barcode", null, null, "PRT Prefix. Frozen")
+              . $this->generateInputPair("Scan lung 2", "lung_2_bc", $data, "barcode", null, null, "PRT Prefix. 10% formalin")
               . "</div>";
-      $this->initUZPJs("step13", $html, "lung_3_bc_input", "step12", "step14", $animalId);
+      $this->initUZPJs("step13", $html, "lung_2_bc_input", "step12", "step14", $animalId);
    }
    
    private function initPmStep14() {
@@ -514,13 +509,11 @@ class Uzp extends DBase{
       $html = "<h3 class='center'>Step 14</h3>"
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Pluck lesions", "pluck_les", $data)
-              . $this->generateInputPair("Scan pluck", "pluck_bc", $data, "barcode", null, null, "10% formalin")
-              . $this->generateInputPair("Scan urine", "urine_1_bc", $data, "barcode", null, null, "Lysis buffer")
-              . $this->generateInputPair("Scan urine", "urine_2_bc", $data, "barcode", null, null, "VTM")
-              . $this->generateInputPair("Scan femur", "femur_1_bc", $data, "barcode", null, null, "VTM")
-              . $this->generateInputPair("Scan femur", "femur_2_bc", $data, "barcode", null, null, "10% formalin")
+              . $this->generateInputPair("Scan pluck", "pluck_bc", $data, "barcode", null, null, "PRT Prefix. 10% formalin")
+              . $this->generateInputPair("Scan urine", "urine_1_bc", $data, "barcode", null, null, "TRZ Prefix. Lysis buffer")
+              . $this->generateInputPair("Scan femur", "femur_1_bc", $data, "barcode", null, null, "PRT Prefix. 10% formalin")
               . "</div>";
-      $this->initUZPJs("step14", $html, "femur_2_bc_input", "step13", "step15", $animalId);
+      $this->initUZPJs("step14", $html, "femur_1_bc_input", "step13", "step15", $animalId);
    }
    
    private function initPmStep15() {
@@ -530,7 +523,7 @@ class Uzp extends DBase{
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Brain lesions", "brain_les", $data)
               . $this->generateInputPair("Brain weight", "brain_weight", $data, "number", null, null, null, array("min" => 1, "max" => 20000))
-              . $this->generateInputPair("Scan brain", "brain_bc", $data, "barcode", null, null, "Frozen")
+              . $this->generateInputPair("Scan brain", "brain_bc", $data, "barcode", null, null, "PRT Prefix. Frozen")
               . "</div>";
       $this->initUZPJs("step15", $html, "brain_bc_input", "step14", "step16", $animalId);
    }
@@ -540,11 +533,10 @@ class Uzp extends DBase{
       $data = $this->getAnimalData($_GET['animal']);
       $html = "<h3 class='center'>Faeces</h3>"
               . "<div class='input_container'>"
-              . $this->generateInputPair("Scan faeces 1", "faeces_1_bc", $data, "barcode", null, null, "Frozen")
-              . $this->generateInputPair("Scan faeces 2", "faeces_2_bc", $data, "barcode", null, null, "VTM")
-              . $this->generateInputPair("Scan faeces 3", "faeces_3_bc", $data, "barcode", null, null, "Fresh (to lab in transport media)")
+              . $this->generateInputPair("Scan faeces 1", "faeces_1_bc", $data, "barcode", null, null, "PRT Prefix. Frozen")
+              . $this->generateInputPair("Scan faeces 2", "faeces_2_bc", $data, "barcode", null, null, "PRT Prefix. Fresh (to lab in transport media)")
               . "</div>";
-      $this->initUZPJs("step16", $html, "faeces_3_bc_input", "step15", "step17", $animalId);
+      $this->initUZPJs("step16", $html, "faeces_2_bc_input", "step15", "step17", $animalId);
    }
    
    private function initPmStep17() {
@@ -553,8 +545,7 @@ class Uzp extends DBase{
       $html = "<h3 class='center'>Urogenital</h3>"
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Urogenital lesions", "urogen_les", $data)
-              . $this->generateInputPair("Scan urogenital", "urogen_1_bc", $data, "barcode", null, null, "VTM")
-              . $this->generateInputPair("Scan urogenital", "urogen_2_bc", $data, "barcode", null, null, "10% formalin")
+              . $this->generateInputPair("Scan urogenital", "urogen_1_bc", $data, "barcode", null, null, "PRT Prefix. 10% formalin")
               . "</div>";
       $this->initUZPJs("step17", $html, "urogen_2_bc_input", "step16", "step18", $animalId);
    }
@@ -565,12 +556,11 @@ class Uzp extends DBase{
       $html = "<h3 class='center'>Stomach & Ileum</h3>"
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Stomach lesions", "stomach_les", $data)
-              . $this->generateInputPair("Scan stomach", "stomach_bc", $data, "barcode", null, null, "10% formalin")
+              . $this->generateInputPair("Scan stomach", "stomach_bc", $data, "barcode", null, null, "PRT Prefix. 10% formalin")
               . $this->generateTextAreaPair("Ileum lesions", "ileum_les", $data)
-              . $this->generateInputPair("Scan ileum 1", "ileum_1_bc", $data, "barcode", null, null, "Frozen")
-              . $this->generateInputPair("Scan ileum 2", "ileum_2_bc", $data, "barcode", null, null, "VTM")
+              . $this->generateInputPair("Scan ileum 1", "ileum_1_bc", $data, "barcode", null, null, "PRT Prefix. Frozen")
               . "</div>";
-      $this->initUZPJs("step18", $html, "ileum_2_bc_input", "step17", "step19", $animalId);
+      $this->initUZPJs("step18", $html, "ileum_1_bc_input", "step17", "step19", $animalId);
    }
    
    private function initPmStep19() {
@@ -579,9 +569,9 @@ class Uzp extends DBase{
       $html = "<h3 class='center'>Intestines</h3>"
               . "<div class='input_container'>"
               . $this->generateTextAreaPair("Small intestines lesions", "smallint_les", $data)
-              . $this->generateInputPair("Scan small intestines", "smallint_bc", $data, "barcode", null, null, "10% formalin")
+              . $this->generateInputPair("Scan small intestines", "smallint_bc", $data, "barcode", null, null, "PRT Prefix. 10% formalin")
               . $this->generateTextAreaPair("Large intestines lesions", "largeint_les", $data)
-              . $this->generateInputPair("Scan large intestines", "largeint_bc", $data, "barcode", null, null, "10% formalin")
+              . $this->generateInputPair("Scan large intestines", "largeint_bc", $data, "barcode", null, null, "PRT Prefix. 10% formalin")
               . "</div>";
       $this->initUZPJs("step19", $html, "largeint_bc_input", "step18", "step20", $animalId);
    }
@@ -591,7 +581,7 @@ class Uzp extends DBase{
       $data = $this->getAnimalData($_GET['animal']);
       $html = "<h3 class='center'>Carcass</h3>"
               . "<div class='input_container'>"
-              . $this->generateInputPair("Carcass barcode", "carcas_bc", $data, "barcode")
+              . $this->generateInputPair("Carcass barcode", "carcas_bc", $data, "barcode", null, null, "CCS Prefix")//PRT for the carcass parts
               . $this->generateTextAreaPair("General Comment", "general_comment", $data)
               . "</div>";
       $this->initUZPJs("step20", $html, "carcas_bc_input", "step19", null, $animalId);

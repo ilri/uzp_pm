@@ -99,6 +99,8 @@ class Uzp extends DBase{
          elseif(OPTIONS_REQUESTED_SUB_MODULE == 'step18') $this->initPmStep18();
          elseif(OPTIONS_REQUESTED_SUB_MODULE == 'step19') $this->initPmStep19();
          elseif(OPTIONS_REQUESTED_SUB_MODULE == 'step20') $this->initPmStep20();
+         elseif(OPTIONS_REQUESTED_SUB_MODULE == 'step21') $this->initPmStep21();
+         elseif(OPTIONS_REQUESTED_SUB_MODULE == 'step22') $this->initPmStep22();
          elseif(OPTIONS_REQUESTED_SUB_MODULE == 'commit') $this->commitStepData();
          elseif(OPTIONS_REQUESTED_SUB_MODULE == 'upload') $this->uploadFile();
       }
@@ -383,13 +385,8 @@ class Uzp extends DBase{
               . $this->generateInputPair("Tibia length (mm)", "tibia_length", $data, "number", "animal_class", array("bat"), $tibiaComment, array("min" => 10, "max" => 200))//only if bat
               . $this->generateInputPair("Hind foot length (mm)", "hfoot_length", $data, "number", null, null, $hindFootComment, array("min" => 1, "max" => 300))
               . $this->generateInputPair("Tail length (mm)", "tail_length", $data, "number", null, null, $tailComment, array("min" => 10, "max" => 1000))
-              . $this->generateFileUploadPair("Full body", "full_body_length", $data, null, null, $fullBodyComment)
-              . $this->generateFileUploadPair("Full anterior facial", "anterior_facial", $data)
-              . $this->generateFileUploadPair("Full lateral facial/head", "lateral_facial", $data)
-              . $this->generateFileUploadPair("Parted pelage on dorsum", "pp_dorsum", $data, "animal_class", array("bat"))//only if bat
-              . $this->generateFileUploadPair("Parted pelage on vetrum", "pp_vetrum", $data, "animal_class", array("bat"))//only if bat
               . "</div>";
-      $this->initUZPJs("step4", $html, "pp_vetrum_input", "step3", "step5", $animalId);
+      $this->initUZPJs("step4", $html, "tail_length_input", "step3", "step5", $animalId);
    }
    
    private function initPmStep5() {
@@ -588,7 +585,48 @@ class Uzp extends DBase{
               . $this->generateInputPair("Carcass barcode", "carcas_bc", $data, "barcode", null, null, "CCS Prefix")//PRT for the carcass parts
               . $this->generateTextAreaPair("General Comment", "general_comment", $data)
               . "</div>";
-      $this->initUZPJs("step20", $html, "carcas_bc_input", "step19", null, $animalId);
+      $this->initUZPJs("step20", $html, "general_comment_input", "step19", "step21", $animalId);
+   }
+   
+   private function initPmStep21() {
+      $animalId = $_GET['animal'];
+      $data = $this->getAnimalData($_GET['animal']);
+      $html = "<h3 class='center'>Photos</h3>"
+              . "<div class='input_container'>"
+              . $this->generateFileUploadPair("Full body", "full_body_length", $data, null, null, $fullBodyComment)
+              . $this->generateFileUploadPair("Full anterior facial", "anterior_facial", $data)
+              . $this->generateFileUploadPair("Full lateral facial/head", "lateral_facial", $data)
+              . $this->generateFileUploadPair("Parted pelage on dorsum", "pp_dorsum", $data, "animal_class", array("bat"))//only if bat
+              . $this->generateFileUploadPair("Parted pelage on vetrum", "pp_vetrum", $data, "animal_class", array("bat"))//only if bat
+              . $this->generateFileUploadPair("Integument photo", "integument_img", $data)
+              . $this->generateFileUploadPair("Pectoral photo", "pectoral_img", $data)
+              . $this->generateFileUploadPair("Ptagium photo", "ptagium_img", $data)
+              . $this->generateFileUploadPair("Saliva photo", "saliva_img", $data)
+              . $this->generateFileUploadPair("Cavity photo", "cavity_img", $data)
+              . $this->generateFileUploadPair("Diaphgram photo", "diaphgram_img", $data)
+              . $this->generateFileUploadPair("Liver photo", "liver_img", $data)
+              . "</div>";
+      $this->initUZPJs("step21", $html, "liver_img_input", "step20", "step22", $animalId);
+   }
+   
+   private function initPmStep22() {
+      $animalId = $_GET['animal'];
+      $data = $this->getAnimalData($_GET['animal']);
+      $html = "<h3 class='center'>Photos</h3>"
+              . "<div class='input_container'>"
+              . $this->generateFileUploadPair("Spleen photo", "spleen_img", $data)
+              . $this->generateFileUploadPair("Kidney photo", "kidney_img", $data)
+              . $this->generateFileUploadPair("Adrenal photo", "adrenal_img", $data)
+              . $this->generateFileUploadPair("Heart photo", "heart_img", $data)
+              . $this->generateFileUploadPair("Lung photo", "lung_img", $data)
+              . $this->generateFileUploadPair("Brain photo", "brain_img", $data)
+              . $this->generateFileUploadPair("Urogenital photo", "urogen_img", $data)
+              . $this->generateFileUploadPair("Stomach photo", "stomach_img", $data)
+              . $this->generateFileUploadPair("Ileum photo", "ileum_img", $data)
+              . $this->generateFileUploadPair("Small intestine photo", "smallint_img", $data)
+              . $this->generateFileUploadPair("Large intestine photo", "largeint_img", $data)
+              . "</div>";
+      $this->initUZPJs("step22", $html, "largeint_img_input", "step21", null, $animalId);
    }
    
    private function initArchivingPage(){
@@ -910,7 +948,7 @@ class Uzp extends DBase{
             $response['message'] = "Previous step committed";
             $response['animal'] = $animalId;
             //check if we are in the last step
-            if($currStep == "step20" && $direction == "next") {
+            if($currStep == "step22" && $direction == "next") {
                $mandatory = array("vet", "assistant", "animal_id", "animal_class", "weight", "species", "id_certainty", "age", "sex", "cond_samp", "is_dis_suspected", "bcs", "body_length", "ear_length", "hfoot_length", "tail_length", "full_body_length", "anterior_facial", "lateral_facial");
                $query = "select * from postmortem where id = :animal";
                $result = $this->Dbase->ExecuteQuery($query, array("animal" => $animalId));

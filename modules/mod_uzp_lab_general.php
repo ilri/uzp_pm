@@ -998,7 +998,11 @@ class Uzp extends DBase{
    
    private function uploadFile() {
       $time = new DateTime('now');
-      $dir = "files".DIRECTORY_SEPARATOR;
+      $animal = $_GET['animal'];
+      if(!file_exists("files")) {
+         mkdir("files", 0777);//not sure if this are the best permissions
+      }
+      $dir = "files".DIRECTORY_SEPARATOR.$animal.DIRECTORY_SEPARATOR;
       if(!file_exists($dir)) {
          mkdir($dir, 0777);//not sure if this are the best permissions
       }

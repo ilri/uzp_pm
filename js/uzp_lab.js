@@ -90,7 +90,7 @@ Uzp.prototype.registerUploader = function(inputId) {
    $("#"+uploaderId).jqxFileUpload({
       width:400,
       fileInputName: "data_file",
-      uploadUrl: "mod_ajax.php?page="+window.uzp_lab.page+"&do=upload",
+      uploadUrl: "mod_ajax.php?page="+window.uzp_lab.page+"&do=upload&animal="+window.uzp_lab.animalId,
       autoUpload: true
    });
    

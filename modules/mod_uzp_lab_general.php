@@ -52,7 +52,7 @@ class Uzp extends DBase{
          return;
       }
       $this->Dbase->InitializeLogs();
-      $this->barcodes = array("animal_id", "edta", "serum", "bsmear_1", "bsmear_2", "osmear_1", "osmear_2", /*"wing",*/ "eparasite", "integument_bc", "pectoral_1_bc", "pectoral_2_bc", "ptagium_bc", "saliva_1_bc", "saliva_2_bc", "diaphgram_bc", "liver_1_bc", "liver_2_bc", "spleen_1_bc", "spleen_2_bc", "kidney_1_bc", "kidney_2_bc", "adrenal_bc", "heart_bc", "lung_1_bc", "pluck_bc", "urine_1_bc", "femur_1_bc", "brain_bc", "faeces_1_bc", "faeces_2_bc", "urogen_1_bc", "urogen_2_bc", "stomach_bc", "ileum_1_bc", "smallint_bc", "largeint_bc", "carcas_bc");
+      $this->barcodes = array("animal_id", "edta", "serum", "bsmear_1", "bsmear_2", "osmear_1", /*"wing",*/ "eparasite", "integument_bc", "pectoral_1_bc", "pectoral_2_bc", "ptagium_bc", "saliva_1_bc", "saliva_2_bc", "diaphgram_bc", "liver_1_bc", "liver_2_bc", "spleen_1_bc", "spleen_2_bc", "kidney_1_bc", "kidney_2_bc", "adrenal_bc", "heart_bc", "lung_1_bc", "pluck_bc", "urine_1_bc", "femur_1_bc", "brain_bc", "faeces_1_bc", "faeces_2_bc", "urogen_1_bc", "urogen_2_bc", "stomach_bc", "ileum_1_bc", "smallint_bc", "largeint_bc", "carcas_bc");
    }
 
    public function sessionStart() {
@@ -309,7 +309,6 @@ class Uzp extends DBase{
             . $this->generateInputPair("Slide box for 2nd smear", "bsmear_2_box", $data, "barcode", null, null, "BREP Prefix")
             . $this->generateInputPair("Position of 2nd smear in box", "bsmear_2_pos", $data, "number")
             . $this->generateInputPair("1st Oropharyngeal", "osmear_1", $data, "barcode", null, null, "PRT Prefix. 200ul Lysis buffer")
-            . $this->generateInputPair("2nd Oropharyngeal", "osmear_2", $data, "barcode", null, null, "PRT Prefix. 200ul VTM")
             //. $this->generateInputPair("Wing biopsy", "wing", $data, "barcode", "animal_class", array("bat"), "ETH Prefix. 0.5mL 97% ethanol, in 1mL cryovial")//only if bat
             . $this->generateInputPair("Ectoparasite", "eparasite", $data, "barcode", null, null, "ETH Prefix. 97% ethanol")
             . "</div>";
@@ -326,12 +325,12 @@ class Uzp extends DBase{
             $species = array(
                "unknown" => "Unknown", "rattus" => "Common Rat (Rattus)", "mastomys" => "Multimammate Rat (Mastomys)", "mus" => "Common Mouse (Mus)", "graphiurus" => "African Dormouse (Graphiurus)", "savannah cane rat" => "Savannah Cane-rat", "dendromus" => "Climbing Mouse (Dendromus)", "steatomys" => "Fat Mouse (Steatomys)", "cricetomys" => "Giant Pouched Rat (Cricetomys)", "saccostomus" => "Pouched Mouse (Saccostomus)", "lophuromys" => "Brush-furred Mouse (Lophuromys)", "arvicanthis" => "Unstriped Grass Rat (Arvicanthis)", "pelomys" => "Creek Rat (Pelomys)", "lemniscomys" => "Zebra Mouse (Lemniscomys)"
             );
-            $bcs = array("1" => "1", "2" => "2", "3" => "3", "4" => "4", "5" => "5");
+            $bcs = null;
             $ages = array(" neonate" => "Neonate", "juvenile" => "Juvenile", "subadult" => "Subadult", "adult" => "Adult", "unknown" => "Unknown");
          }
          else if($data['animal_class'] == 'bat') {
             $species = array("unknown" => "Unknown", "eidolon helvum" => "Eidolon helvum", "lissonycerteris angolensis" => "Lissonycerteris angolensis", "micropteropus pusillus" => "Micropteropus pusillus", "rousettus aegyptiacus" => "Rousettus aegyptiacus", "epomorphus" => "Epomorphus", "epomorphus minimus" => "Epomorphus minimus", "epomorphus wahlbergi" => "Epomorphus wahlbergi", "rhinolophus" => "Rhinolophus", "rhinolophus clivosus" => "Rhinolophus clivosus", "rhinolophus eloquens" => "Rhinolophus eloquens", "rhinolophus fumigatus" => "Rhinolophus fumigatus", "rhinolophus hildebrandtii" => "Rhinolophus hildebrandtii", "rhinolophus landeri" => "Rhinolophus landeri", "rhinolophus simulator" => "Rhinolophus simulator", "hipposideridae" => "Hipposideridae", "triaenops persicus" => "Triaenops persicus", "hipposideros caffer" => "Hipposideros caffer", "hipposideros gigas" => "Hipposideros gigas", "hipposideros megalotis" => "Hipposideros megalotis", "hipposideros ruber" => "Hipposideros ruber", "hipposideros vittatus" => "Hipposideros vittatus", "megadermatidae" => "Megadermatidae", "cardioderma cor" => "Cardioderma cor", "lavia frons" => "Lavia frons", "rhinopomatidae" => "Rhinopomatidae", "rhinopoma macinnesi" => "Rhinopoma macinnesi", "emballonuridae" => "Emballonuridae", "taphozous perforatus" => "Taphozous perforatus", "nycteridae" => "Nycteridae", "nycteris aurita" => "Nycteris aurita", "nycteris grandis" => "Nycteris grandis", "nycteris hispida" => "Nycteris hispida", "nycteris macrotis" => "Nycteris macrotis", "nycteris thebaica" => "Nycteris thebaica", "molossidae" => "Molossidae", "platymops (genus)" => "Platymops (genus)", "platymops setiger" => "Platymops setiger", "chaerephon (genus)" => "Chaerephon (genus)", "chaerephon bemmeleni" => "Chaerephon bemmeleni", "chaerephon chapini" => "Chaerephon chapini", "mops (genus)" => "Mops (genus)", "mops condylurus" => "Mops condylurus", "tadarida (genus)" => "Tadarida (genus)", "tadarida aegyptiaca" => "Tadarida aegyptiaca", "tadarida lobata" => "Tadarida lobata", "miniopteridae" => "Miniopteridae", "miniopterus africanus" => "Miniopterus africanus", "miniopterus fraterculus" => "Miniopterus fraterculus", "miniopterus inflatus" => "Miniopterus inflatus", "miniopterus natalensis" => "Miniopterus natalensis", "vespertilionidae" => "Vespertilionidae", "mimetillus moloneyi" => "Mimetillus moloneyi", "nycticeinops schlieffeni" => "Nycticeinops schlieffeni", "glauconycteris (genus)" => "Glauconycteris (genus)", "glauconycteris argentata" => "Glauconycteris argentata", "glauconycteris variegata" => "Glauconycteris variegata", "hypsugo (genus)" => "Hypsugo (genus)", "hypsugo eisentrauti" => "Hypsugo eisentrauti", "pipistrellus (genus)" => "Pipistrellus (genus)", "pipistrellus aero" => "Pipistrellus aero", "pipistrellus grandidieri" => "Pipistrellus grandidieri", "pipistrellus hesperidus" => "Pipistrellus hesperidus", "kerivoula (genus)" => "Kerivoula (genus)", "kerivoula argentata" => "Kerivoula argentata", "kerivoula smithii" => "Kerivoula smithii", "myotis (genus)" => "Myotis (genus)", "myotis bocagii" => "Myotis bocagii", "myotis tricolor" => "Myotis tricolor", "myotis welwitschii" => "Myotis welwitschii", "neoromicia (genus)" => "Neoromicia (genus)", "neoromicia capensis" => "Neoromicia capensis", "neoromicia helios" => "Neoromicia helios", "neoromicia nana " => "Neoromicia nana ", "neoromicia somalica" => "Neoromicia somalica", "scotoecus (genus)" => "Scotoecus (genus)", "scotoecus albigula" => "Scotoecus albigula", "scotoecus hindei" => "Scotoecus hindei", "scotoecus hirundo" => "Scotoecus hirundo", "scotophilus" => "Scotophilus", "scotophilus nigrita" => "Scotophilus nigrita");
-            $bcs = array("poor" => "Poor", "fair" => "Fair", "good" => "Good");
+            $bcs = "Weight in grams divided by forearm length in mm";
             $ages = array(" neonate" => "Neonate", "juvenile" => "Juvenile", "adult" => "Adult", "unknown" => "Unknown");
          }
       }
@@ -348,7 +347,7 @@ class Uzp extends DBase{
               . $this->generateTextAreaPair("Describe clinical signs if present", "clcl_sgns", $data)
               . $this->generateSelectPair("Is disease suspected?", 'is_dis_suspected', array("yes" => "Yes", "no" => "No"), $data)
               . $this->generateInputPair("Suspected disease", "suspect_dis", $data, "text", "is_dis_suspected", array("yes"))
-              . $this->generateSelectPair("Body condition score", "bcs", $bcs, $data)
+              . $this->generateInputPair("Body condition score", "bcs", $data, "number", null, null, $bcs)
             . "</div>";
       $this->initUZPJs("step3", $html, "bcs_input", "step2", "step4", $_GET['animal']);
    }
@@ -696,6 +695,7 @@ class Uzp extends DBase{
    
    private function generateInputPair($label, $id, $data = null, $type = 'text', $dependsOn = null, $possibleValues = null, $comment = null, $bounds = null, $required = false) {
       $extraStyle = "";
+      $extraType = "";
       if($type == 'barcode') {
          $idSelect = "";
          if($data != null) $idSelect = " and id != ".$data['id'];
@@ -724,6 +724,7 @@ class Uzp extends DBase{
 </script>
 <?php
       }
+      if($type == 'number') $extraType = "step='any'";
       $defaultValue = '';
       $disabled = '';
       if($data != null){
@@ -758,7 +759,7 @@ class Uzp extends DBase{
 <?php
       }
       $input_id = $id."_input";
-      $html = "<div id='$id'><label class='input_label'>$label</label>&nbsp;&nbsp;<input type='$type' id='$input_id' name='$input_id' class='$extraStyle input-medium' value='$defaultValue' $disabled /></div>";
+      $html = "<div id='$id'><label class='input_label'>$label</label>&nbsp;&nbsp;<input type='$type' $extraType id='$input_id' name='$input_id' class='$extraStyle input-medium' value='$defaultValue' $disabled /></div>";
       if($comment != null) {
          $html .= "<div class='input_comment'>$comment</div>";
       }
